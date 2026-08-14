@@ -1,0 +1,15 @@
+{
+  "name": "Database",
+  "version": 1,
+  "directories": [
+    "database/migrations",
+    "database/seeders",
+    "database/factories"
+  ],
+  "files": [
+    "database/.gitkeep",
+    "database/migrations/.gitkeep",
+    "database/seeders/.gitkeep",
+    "database/factories/.gitkeep"
+  ]
+}

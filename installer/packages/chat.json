@@ -1,0 +1,13 @@
+{
+  "name": "Chat",
+  "version": 1,
+  "directories": [
+    "app/chat",
+    "app/chat/controllers",
+    "app/chat/services"
+  ],
+  "files": [
+    "app/chat/controllers/.gitkeep",
+    "app/chat/services/.gitkeep"
+  ]
+}

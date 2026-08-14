@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>My Conversations</h2>
+
+<div id="list">Loading...</div>
+
+<script>
+
+const API = window.location.origin;
+
+const token = localStorage.getItem("token");
+
+fetch(API + "/messages/", {
+    headers:{
+        Authorization:"Bearer " + token
+    }
+})
+.then(r=>r.json())
+.then(data=>{
+
+    let html="";
+
+    data.forEach(msg=>{
+
+        let other =
+            msg.sender_id==1
+            ? msg.receiver_id
+            : msg.sender_id;
+
+        html += `
+        <div style="padding:15px;border-bottom:1px solid #ddd;cursor:pointer"
+             onclick="location='chat.html?receiver=${other}'">
+
+            <b>Musician ${other}</b><br>
+
+            ${msg.text}
+
+        </div>
+        `;
+
+    });
+
+    document.getElementById("list").innerHTML=html;
+
+});
+
+</script>
+
+</body>
+</html>

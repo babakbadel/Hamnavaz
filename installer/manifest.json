@@ -1,0 +1,24 @@
+{
+  "project": "Hamnavaz",
+  "version": 1,
+  "directories": [
+    "app",
+    "config",
+    "database",
+    "public",
+    "storage",
+    "storage/logs",
+    "storage/cache",
+    "resources",
+    "resources/views",
+    "resources/assets"
+  ],
+  "files": [
+    "README.md",
+    ".env.example",
+    "app/.gitkeep",
+    "config/.gitkeep",
+    "database/.gitkeep",
+    "public/index.html"
+  ]
+}

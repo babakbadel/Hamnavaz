@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Musicians</title>
+</head>
+
+<body>
+
+<h2>Hamnavaz Musicians</h2>
+
+<div id="list">
+Loading...
+</div>
+
+
+<script>
+
+const API = window.location.origin;
+
+
+async function loadMusicians(){
+
+const res = await fetch(API+"/musician/");
+const data = await res.json();
+
+let html="";
+
+
+data.forEach(m=>{
+
+html += `
+
+<div style="border:1px solid #ccc;padding:10px;margin:10px">
+
+<h3>${m.name}</h3>
+
+<p>
+${m.city} - ${m.instrument}
+</p>
+
+<button onclick="openProfile(${m.id})">
+View Profile
+</button>
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById("list").innerHTML=html;
+
+}
+
+
+function openProfile(id){
+
+location.href="profile.html?id="+id;
+
+}
+
+
+loadMusicians();
+
+
+</script>
+
+</body>
+</html>

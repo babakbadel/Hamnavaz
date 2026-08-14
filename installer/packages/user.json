@@ -1,0 +1,13 @@
+{
+  "name": "User",
+  "version": 1,
+  "directories": [
+    "app/user",
+    "app/user/controllers",
+    "app/user/models"
+  ],
+  "files": [
+    "app/user/controllers/.gitkeep",
+    "app/user/models/.gitkeep"
+  ]
+}

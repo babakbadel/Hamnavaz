@@ -1,0 +1,68 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.database.session import get_db
+from app.schemas.{{MODEL_NAME_LOWER}} import (
+    {{MODEL_NAME}}Create
+)
+
+from app.services.{{MODEL_NAME_LOWER}} import (
+    list_{{MODEL_NAME_LOWER}},
+    find_{{MODEL_NAME_LOWER}},
+    create_{{MODEL_NAME_LOWER}},
+    update_{{MODEL_NAME_LOWER}},
+    delete_{{MODEL_NAME_LOWER}}
+)
+
+
+router = APIRouter(
+    prefix="/{{MODEL_NAME_LOWER}}s",
+    tags=["{{MODEL_NAME}}"]
+)
+
+
+@router.get("/")
+def get_all(
+    db: Session = Depends(get_db)
+):
+    return list_{{MODEL_NAME_LOWER}}(db)
+
+
+@router.get("/{item_id}")
+def get_one(
+    item_id: int,
+    db: Session = Depends(get_db)
+):
+    return find_{{MODEL_NAME_LOWER}}(db, item_id)
+
+
+@router.post("/")
+def create(
+    data: {{MODEL_NAME}}Create,
+    db: Session = Depends(get_db)
+):
+    return create_{{MODEL_NAME_LOWER}}(db, data)
+
+
+@router.put("/{item_id}")
+def update(
+    item_id: int,
+    data: {{MODEL_NAME}}Create,
+    db: Session = Depends(get_db)
+):
+    return update_{{MODEL_NAME_LOWER}}(
+        db,
+        item_id,
+        data
+    )
+
+
+@router.delete("/{item_id}")
+def delete(
+    item_id: int,
+    db: Session = Depends(get_db)
+):
+    return delete_{{MODEL_NAME_LOWER}}(
+        db,
+        item_id
+    )

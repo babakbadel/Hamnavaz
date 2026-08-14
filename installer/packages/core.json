@@ -1,0 +1,13 @@
+{
+  "name": "Core",
+  "version": 1,
+  "directories": [
+    "core",
+    "core/bootstrap",
+    "core/helpers"
+  ],
+  "files": [
+    "core/bootstrap/app.py",
+    "core/helpers/functions.py"
+  ]
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Musicians - Hamnavaz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Find Musicians</h2>
+
+<input id="city" placeholder="City">
+
+<button onclick="searchMusicians()">
+Search
+</button>
+
+<div id="results"></div>
+
+</div>
+
+
+<script>
+
+const API = window.location.origin;
+
+
+async function searchMusicians(){
+
+    const city = document.getElementById("city").value;
+
+    const response = await fetch(
+        `${API}/search/musicians?city=${city}`
+    );
+
+
+    const data = await response.json();
+
+
+    let html = `<h3>Total: ${data.total}</h3>`;
+
+
+    data.results.forEach(item => {
+
+        html += `
+        <div class="card">
+            <h3>${item.name}</h3>
+            <p>City: ${item.city}</p>
+            <p>Instrument: ${item.instrument}</p>
+            <p>Rating: ${item.rating}</p>
+        </div>
+        `;
+
+    });
+
+
+    document.getElementById("results").innerHTML = html;
+
+}
+
+</script>
+
+
+</body>
+</html>

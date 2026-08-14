@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>همنواز | جایی برای پیدا کردن همنواز</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- Ambient background -->
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+<div class="ambient ambient-3"></div>
+
+<!-- ================= HEADER ================= -->
+
+<header class="topbar">
+
+    <button class="icon-btn hamburger" id="menuBtn" aria-label="منو">
+        <span class="material-symbols-rounded">menu</span>
+    </button>
+
+    <a class="brand" href="index.html">
+        <div class="brand-mark">
+            <span>♫</span>
+        </div>
+
+        <div>
+            <strong>همنواز</strong>
+            <small>موسیقی، با هم</small>
+        </div>
+    </a>
+
+    <nav class="desktop-nav">
+        <a href="#musicians">نوازنده‌ها</a>
+        <a href="#instruments">سازها</a>
+        <a href="#discover">کشف کن</a>
+        <a href="#community">مشارکت‌ها</a>
+    </nav>
+
+    <div class="header-actions">
+
+        <button class="icon-btn" onclick="openSnack()" aria-label="دسترسی سریع">
+            <span class="material-symbols-rounded">apps</span>
+        </button>
+
+        <button class="icon-btn notification-btn" aria-label="اعلان">
+            <span class="material-symbols-rounded">notifications</span>
+            <i></i>
+        </button>
+
+        <a class="profile-mini" href="login.html">
+            <div class="avatar avatar-gold">م</div>
+            <span>ورود</span>
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ================= SIDE MENU ================= -->
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<aside class="side-menu" id="sideMenu">
+
+    <div class="side-head">
+        <div class="brand">
+            <div class="brand-mark">
+                <span>♫</span>
+            </div>
+
+            <div>
+                <strong>همنواز</strong>
+                <small>موسیقی، با هم</small>
+            </div>
+        </div>
+
+        <button class="icon-btn" id="closeMenu">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    </div>
+
+    <div class="side-user">
+        <div class="avatar avatar-gold">م</div>
+        <div>
+            <strong>به همنواز خوش آمدی</strong>
+            <small>برای شروع وارد شو</small>
+        </div>
+    </div>
+
+    <div class="side-links">
+
+        <a href="index.html">
+            <span class="material-symbols-rounded">home</span>
+            خانه
+        </a>
+
+        <a href="musicians.html">
+            <span class="material-symbols-rounded">groups</span>
+            نوازنده‌ها
+        </a>
+
+        <a href="search.html">
+            <span class="material-symbols-rounded">search</span>
+            جستجوی همنواز
+        </a>
+
+        <a href="#instruments">
+            <span class="material-symbols-rounded">piano</span>
+            سازها
+        </a>
+
+        <a href="#community">
+            <span class="material-symbols-rounded">handshake</span>
+            همکاری‌ها
+        </a>
+
+        <a href="requests.html">
+            <span class="material-symbols-rounded">inbox</span>
+            درخواست‌ها
+        </a>
+
+        <a href="conversations.html">
+            <span class="material-symbols-rounded">chat</span>
+            پیام‌ها
+        </a>
+
+        <div class="side-divider"></div>
+
+        <a href="#">
+            <span class="material-symbols-rounded">school</span>
+            مدرس‌ها
+        </a>
+
+        <a href="#">
+            <span class="material-symbols-rounded">storefront</span>
+            فروشگاه ساز
+        </a>
+
+        <a href="#">
+            <span class="material-symbols-rounded">event</span>
+            کنسرت‌ها
+        </a>
+
+        <a href="#">
+            <span class="material-symbols-rounded">confirmation_number</span>
+            فروش بلیت
+        </a>
+
+        <a href="#">
+            <span class="material-symbols-rounded">library_music</span>
+            فروش موسیقی
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= SNACK MENU ================= -->
+
+<div class="snack-menu" id="snackMenu">
+
+    <a href="search.html">
+        <span class="material-symbols-rounded">search</span>
+        <b>جستجو</b>
+    </a>
+
+    <a href="musicians.html">
+        <span class="material-symbols-rounded">person_search</span>
+        <b>نوازنده</b>
+    </a>
+
+    <a href="#">
+        <span class="material-symbols-rounded">music_note</span>
+        <b>ساز</b>
+    </a>
+
+    <a href="#">
+        <span class="material-symbols-rounded">event</span>
+        <b>اجرا</b>
+    </a>
+
+    <a href="#">
+        <span class="material-symbols-rounded">handshake</span>
+        <b>همکاری</b>
+    </a>
+
+</div>
+
+
+<main>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="eyebrow">
+            <span class="live-dot"></span>
+            جامعه‌ی موسیقی همنواز
+        </div>
+
+        <h1>
+            همنوازت را
+            <span>پیدا کن.</span>
+        </h1>
+
+        <p>
+            نوازنده، ساز، گروه یا اجرای بعدی‌ات را پیدا کن.
+            موسیقی وقتی زیباتر می‌شود که با هم ساخته شود.
+        </p>
+
+        <div class="hero-search">
+
+            <div class="search-field">
+                <span class="material-symbols-rounded">search</span>
+                <input
+                    id="heroSearch"
+                    type="text"
+                    placeholder="مثلاً گیتاریست در تهران..."
+                >
+            </div>
+
+            <button onclick="heroSearch()">
+                پیدا کن
+                <span class="material-symbols-rounded">arrow_back</span>
+            </button>
+
+        </div>
+
+        <div class="quick-tags">
+            <button onclick="quickSearch('گیتار')">🎸 گیتار</button>
+            <button onclick="quickSearch('پیانو')">🎹 پیانو</button>
+            <button onclick="quickSearch('درام')">🥁 درام</button>
+            <button onclick="quickSearch('ویولن')">🎻 ویولن</button>
+        </div>
+
+    </div>
+
+
+    <!-- ================= CODED 3D VISUAL ================= -->
+
+    <div class="hero-visual">
+
+        <div class="orb orb-one"></div>
+        <div class="orb orb-two"></div>
+
+        <div class="music-ring ring-one"></div>
+        <div class="music-ring ring-two"></div>
+        <div class="music-ring ring-three"></div>
+
+        <div class="floating-note note-1">♪</div>
+        <div class="floating-note note-2">♫</div>
+        <div class="floating-note note-3">♬</div>
+
+        <div class="vinyl">
+
+            <div class="vinyl-grooves"></div>
+
+            <div class="vinyl-center">
+                <span>♫</span>
+            </div>
+
+        </div>
+
+        <div class="equalizer">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+        </div>
+
+        <div class="hero-card card-online">
+            <span class="live-dot"></span>
+            <div>
+                <strong>۱۲۸</strong>
+                <small>نوازنده آنلاین</small>
+            </div>
+        </div>
+
+        <div class="hero-card card-rating">
+            <span class="material-symbols-rounded">star</span>
+            <div>
+                <strong>۴.۹</strong>
+                <small>میانگین امتیاز</small>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ONLINE USERS ================= -->
+
+<section class="section" id="musicians">
+
+    <div class="section-head">
+
+        <div>
+            <span class="section-label">LIVE NOW</span>
+            <h2>نوازنده‌های آنلاین</h2>
+            <p>آدم‌هایی که همین حالا آماده‌ی موسیقی‌اند.</p>
+        </div>
+
+        <a href="musicians.html" class="see-all">
+            مشاهده همه
+            <span class="material-symbols-rounded">arrow_back</span>
+        </a>
+
+    </div>
+
+    <div class="online-row">
+
+        <div class="online-person">
+            <div class="online-avatar avatar-purple">آ</div>
+            <span>آرمان</span>
+            <small>گیتار</small>
+        </div>
+
+        <div class="online-person">
+            <div class="online-avatar avatar-blue">س</div>
+            <span>سارا</span>
+            <small>پیانو</small>
+        </div>
+
+        <div class="online-person">
+            <div class="online-avatar avatar-pink">م</div>
+            <span>مهدی</span>
+            <small>درام</small>
+        </div>
+
+        <div class="online-person">
+            <div class="online-avatar avatar-green">ن</div>
+            <span>نگار</span>
+            <small>ویولن</small>
+        </div>
+
+        <div class="online-person">
+            <div class="online-avatar avatar-orange">ر</div>
+            <span>رضا</span>
+            <small>بیس</small>
+        </div>
+
+        <div class="online-person">
+            <div class="online-avatar avatar-red">ک</div>
+            <span>کیان</span>
+            <small>ساکسفون</small>
+        </div>
+
+        <div class="online-person more-online">
+            <div class="more-avatar">+۱۲۲</div>
+            <span>دیگران</span>
+            <small>آنلاین</small>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= INSTRUMENTS ================= -->
+
+<section class="section" id="instruments">
+
+    <div class="section-head">
+
+        <div>
+            <span class="section-label">EXPLORE</span>
+            <h2>دنیای سازها</h2>
+            <p>سازت را انتخاب کن و همنواز مناسبش را پیدا کن.</p>
+        </div>
+
+        <a href="#" class="see-all">
+            همه سازها
+            <span class="material-symbols-rounded">arrow_back</span>
+        </a>
+
+    </div>
+
+
+    <div class="instrument-grid">
+
+        <button class="instrument-card guitar">
+            <div class="instrument-art">
+                <span class="instrument-emoji">🎸</span>
+            </div>
+            <strong>گیتار</strong>
+            <small>۱,۲۴۸ نوازنده</small>
+        </button>
+
+        <button class="instrument-card piano">
+            <div class="instrument-art">
+                <span class="instrument-emoji">🎹</span>
+            </div>
+            <strong>پیانو</strong>
+            <small>۸۹۲ نوازنده</small>
+        </button>
+
+        <button class="instrument-card drums">
+            <div class="instrument-art">
+                <span class="instrument-emoji">🥁</span>
+            </div>
+            <strong>درام</strong>
+            <small>۵۶۱ نوازنده</small>
+        </button>
+
+        <button class="instrument-card violin">
+            <div class="instrument-art">
+                <span class="instrument-emoji">🎻</span>
+            </div>
+            <strong>ویولن</strong>
+            <small>۷۴۳ نوازنده</small>
+        </button>
+
+        <button class="instrument-card sax">
+            <div class="instrument-art">
+                <span class="instrument-emoji">🎷</span>
+            </div>
+            <strong>ساکسفون</strong>
+            <small>۳۴۸ نوازنده</small>
+        </button>
+
+        <button class="instrument-card mic">
+            <div class="instrument-art">
+                <span class="instrument-emoji">🎤</span>
+            </div>
+            <strong>خوانندگی</strong>
+            <small>۹۷۶ نوازنده</small>
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= TOP MUSICIANS ================= -->
+
+<section class="section" id="discover">
+
+    <div class="section-head">
+
+        <div>
+            <span class="section-label">TOP RATED</span>
+            <h2>بالاترین امتیازها</h2>
+            <p>نوازنده‌هایی که جامعه همنواز بیشتر دوستشان داشته.</p>
+        </div>
+
+        <a href="musicians.html" class="see-all">
+            کشف نوازنده‌ها
+            <span class="material-symbols-rounded">arrow_back</span>
+        </a>
+
+    </div>
+
+
+    <div class="musician-grid">
+
+        <article class="musician-card">
+
+            <div class="musician-cover cover-one">
+                <span class="rank">#۱</span>
+                <div class="big-avatar">آ</div>
+            </div>
+
+            <div class="musician-info">
+
+                <div class="musician-name">
+                    <h3>آرمان رضایی</h3>
+                    <span class="verified">✓</span>
+                </div>
+
+                <p>گیتاریست · تهران</p>
+
+                <div class="rating">
+                    <span>★</span>
+                    <strong>۴.۹</strong>
+                    <small>(۱۲۸ نظر)</small>
+                </div>
+
+                <button onclick="location.href='profile.html?id=1'">
+                    مشاهده پروفایل
+                </button>
+
+            </div>
+
+        </article>
+
+
+        <article class="musician-card">
+
+            <div class="musician-cover cover-two">
+                <span class="rank">#۲</span>
+                <div class="big-avatar">س</div>
+            </div>
+
+            <div class="musician-info">
+
+                <div class="musician-name">
+                    <h3>سارا محمدی</h3>
+                    <span class="verified">✓</span>
+                </div>
+
+                <p>پیانیست · اصفهان</p>
+
+                <div class="rating">
+                    <span>★</span>
+                    <strong>۴.۸</strong>
+                    <small>(۹۶ نظر)</small>
+                </div>
+
+                <button onclick="location.href='profile.html?id=2'">
+                    مشاهده پروفایل
+                </button>
+
+            </div>
+
+        </article>
+
+
+        <article class="musician-card">
+
+            <div class="musician-cover cover-three">
+                <span class="rank">#۳</span>
+                <div class="big-avatar">م</div>
+            </div>
+
+            <div class="musician-info">
+
+                <div class="musician-name">
+                    <h3>مهدی کریمی</h3>
+                    <span class="verified">✓</span>
+                </div>
+
+                <p>درامر · شیراز</p>
+
+                <div class="rating">
+                    <span>★</span>
+                    <strong>۴.۸</strong>
+                    <small>(۸۱ نظر)</small>
+                </div>
+
+                <button onclick="location.href='profile.html?id=3'">
+                    مشاهده پروفایل
+                </button>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<!-- ================= DISCOVER MENU ================= -->
+
+<section class="section" id="community">
+
+    <div class="section-head">
+
+        <div>
+            <span class="section-label">HAMNAVAZ WORLD</span>
+            <h2>دنیای همنواز</h2>
+            <p>فقط پیدا کردن نوازنده نیست؛ اینجا دنیای موسیقی توست.</p>
+        </div>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+        <a href="#" class="feature-card feature-gold">
+            <span class="material-symbols-rounded">school</span>
+            <div>
+                <strong>مدرس‌ها</strong>
+                <small>یادگیری از نوازنده‌های حرفه‌ای</small>
+            </div>
+            <b>←</b>
+        </a>
+
+        <a href="#" class="feature-card feature-purple">
+            <span class="material-symbols-rounded">storefront</span>
+            <div>
+                <strong>فروشگاه ساز</strong>
+                <small>ساز و تجهیزات موسیقی</small>
+            </div>
+            <b>←</b>
+        </a>
+
+        <a href="#" class="feature-card feature-blue">
+            <span class="material-symbols-rounded">event</span>
+            <div>
+                <strong>کنسرت‌ها</strong>
+                <small>اجراهای نزدیکت را پیدا کن</small>
+            </div>
+            <b>←</b>
+        </a>
+
+        <a href="#" class="feature-card feature-pink">
+            <span class="material-symbols-rounded">confirmation_number</span>
+            <div>
+                <strong>فروش بلیت</strong>
+                <small>بلیط اجرای مورد علاقه‌ات</small>
+            </div>
+            <b>←</b>
+        </a>
+
+        <a href="#" class="feature-card feature-green">
+            <span class="material-symbols-rounded">handshake</span>
+            <div>
+                <strong>همکاری‌ها</strong>
+                <small>پروژه موسیقی خودت را شروع کن</small>
+            </div>
+            <b>←</b>
+        </a>
+
+        <a href="#" class="feature-card feature-orange">
+            <span class="material-symbols-rounded">library_music</span>
+            <div>
+                <strong>موسیقی</strong>
+                <small>آثار و صداهای جدید</small>
+            </div>
+            <b>←</b>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CONTRIBUTION ================= -->
+
+<section class="contribution">
+
+    <div class="contribution-glow"></div>
+
+    <div class="contribution-content">
+
+        <span class="section-label">MAKE MUSIC TOGETHER</span>
+
+        <h2>
+            یک نفر دنبال
+            <span>توست.</span>
+        </h2>
+
+        <p>
+            شاید یک خواننده برای گروهش دنبال گیتاریست باشد،
+            شاید یک مدرس دنبال نوازنده باشد،
+            یا یک موسسه برای یک اجرای خیریه همنواز بخواهد.
+        </p>
+
+        <div class="contribution-buttons">
+            <a href="search.html" class="primary-btn">
+                همنواز پیدا کن
+                <span class="material-symbols-rounded">arrow_back</span>
+            </a>
+
+            <a href="register.html" class="secondary-btn">
+                به همنواز بپیوند
+            </a>
+        </div>
+
+    </div>
+
+    <div class="contribution-art">
+
+        <div class="sound-orb"></div>
+
+        <span>♪</span>
+        <span>♫</span>
+        <span>♬</span>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="footer-brand">
+        <div class="brand-mark">
+            <span>♫</span>
+        </div>
+
+        <div>
+            <strong>همنواز</strong>
+            <small>موسیقی، با هم</small>
+        </div>
+    </div>
+
+    <p>
+        همنواز؛ جایی برای پیدا کردن آدم‌هایی که موسیقی را مثل تو دوست دارند.
+    </p>
+
+    <div class="footer-links">
+        <a href="#">درباره ما</a>
+        <a href="#">قوانین</a>
+        <a href="#">حریم خصوصی</a>
+        <a href="#">تماس با ما</a>
+    </div>
+
+    <small class="copyright">
+        © ۲۰۲۶ Hamnavaz
+    </small>
+
+</footer>
+
+</main>
+
+
+<!-- ================= MOBILE NAV ================= -->
+
+<nav class="mobile-nav">
+
+    <a class="active" href="index.html">
+        <span class="material-symbols-rounded">home</span>
+        خانه
+    </a>
+
+    <a href="search.html">
+        <span class="material-symbols-rounded">search</span>
+        جستجو
+    </a>
+
+    <button onclick="openSnack()" class="add-nav">
+        <span class="material-symbols-rounded">add</span>
+    </button>
+
+    <a href="conversations.html">
+        <span class="material-symbols-rounded">chat</span>
+        پیام
+    </a>
+
+    <a href="login.html">
+        <span class="material-symbols-rounded">person</span>
+        من
+    </a>
+
+</nav>
+
+
+<script>
+
+const menuBtn = document.getElementById("menuBtn");
+const closeMenu = document.getElementById("closeMenu");
+const sideMenu = document.getElementById("sideMenu");
+const menuOverlay = document.getElementById("menuOverlay");
+
+function openMenu(){
+    sideMenu.classList.add("open");
+    menuOverlay.classList.add("show");
+}
+
+function closeSideMenu(){
+    sideMenu.classList.remove("open");
+    menuOverlay.classList.remove("show");
+}
+
+menuBtn.addEventListener("click", openMenu);
+closeMenu.addEventListener("click", closeSideMenu);
+menuOverlay.addEventListener("click", closeSideMenu);
+
+
+const snackMenu = document.getElementById("snackMenu");
+
+function openSnack(){
+    snackMenu.classList.toggle("open");
+}
+
+
+function heroSearch(){
+
+    const value = document.getElementById("heroSearch").value.trim();
+
+    if(value){
+        window.location.href =
+            "search.html?query=" + encodeURIComponent(value);
+    }else{
+        window.location.href = "search.html";
+    }
+
+}
+
+
+function quickSearch(value){
+
+    window.location.href =
+        "search.html?query=" + encodeURIComponent(value);
+
+}
+
+
+document.getElementById("heroSearch")
+    .addEventListener("keydown", function(e){
+
+        if(e.key === "Enter"){
+            heroSearch();
+        }
+
+    });
+
+</script>
+
+
+<!-- HAMNAVAZ_DYNAMIC_HOME_V1 -->
+<script>
+(function () {
+
+    const API = window.location.origin;
+
+    async function hamnavazApi(endpoint, options = {}) {
+
+        const token = localStorage.getItem("token");
+
+        const headers = {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        };
+
+        if (token) {
+            headers["Authorization"] = "Bearer " + token;
+        }
+
+        const response = await fetch(API + endpoint, {
+            ...options,
+            headers
+        });
+
+        let data = null;
+
+        try {
+            data = await response.json();
+        } catch (_) {
+            data = null;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                data?.detail ||
+                `API Error ${response.status}`
+            );
+        }
+
+        return data;
+    }
+
+
+    // ==================================================
+    // LOAD REAL MUSICIANS
+    // ==================================================
+
+    async function loadRealMusicians() {
+
+        try {
+
+            const musicians = await hamnavazApi("/musician/");
+
+            console.log(
+                "[Hamnavaz] musicians:",
+                musicians
+            );
+
+            if (!Array.isArray(musicians)) {
+                return;
+            }
+
+            // --------------------------------------------------
+            // Online musician section
+            // --------------------------------------------------
+
+            const onlineRow =
+                document.querySelector(".online-row");
+
+            if (onlineRow && musicians.length) {
+
+                onlineRow.innerHTML = "";
+
+                musicians.slice(0, 6).forEach((musician) => {
+
+                    const person =
+                        document.createElement("div");
+
+                    person.className = "online-person";
+
+                    const avatar =
+                        document.createElement("div");
+
+                    avatar.className =
+                        "online-avatar avatar-purple";
+
+                    const name =
+                        musician.display_name ||
+                        "نوازنده";
+
+                    avatar.textContent =
+                        name.trim().charAt(0);
+
+                    const nameEl =
+                        document.createElement("span");
+
+                    nameEl.textContent = name;
+
+                    const city =
+                        document.createElement("small");
+
+                    city.textContent =
+                        musician.city ||
+                        "شهر ثبت نشده";
+
+                    person.appendChild(avatar);
+                    person.appendChild(nameEl);
+                    person.appendChild(city);
+
+                    person.style.cursor = "pointer";
+
+                    person.addEventListener("click", () => {
+
+                        window.location.href =
+                            "profile.html?id=" +
+                            encodeURIComponent(
+                                musician.user_id
+                            );
+
+                    });
+
+                    onlineRow.appendChild(person);
+
+                });
+
+                if (musicians.length > 6) {
+
+                    const more =
+                        document.createElement("div");
+
+                    more.className =
+                        "online-person more-online";
+
+                    more.innerHTML = `
+                        <div class="more-avatar">
+                            +${musicians.length - 6}
+                        </div>
+                        <span>دیگران</span>
+                        <small>نوازنده</small>
+                    `;
+
+                    onlineRow.appendChild(more);
+                }
+            }
+
+
+            // --------------------------------------------------
+            // Top musicians
+            // --------------------------------------------------
+
+            const musicianGrid =
+                document.querySelector(".musician-grid");
+
+            if (musicianGrid && musicians.length) {
+
+                musicianGrid.innerHTML = "";
+
+                musicians.slice(0, 3).forEach(
+                    (musician, index) => {
+
+                    const card =
+                        document.createElement("article");
+
+                    card.className =
+                        "musician-card";
+
+                    const name =
+                        musician.display_name ||
+                        "نوازنده";
+
+                    const city =
+                        musician.city ||
+                        "شهر ثبت نشده";
+
+                    const avatar =
+                        name.trim().charAt(0);
+
+                    const verified =
+                        musician.is_verified
+                            ? '<span class="verified">✓</span>'
+                            : "";
+
+                    card.innerHTML = `
+                        <div class="musician-cover cover-${index + 1}">
+                            <span class="rank">
+                                #${index + 1}
+                            </span>
+
+                            <div class="big-avatar">
+                                ${avatar}
+                            </div>
+                        </div>
+
+                        <div class="musician-info">
+
+                            <div class="musician-name">
+                                <h3>${escapeHtml(name)}</h3>
+                                ${verified}
+                            </div>
+
+                            <p>
+                                نوازنده · ${escapeHtml(city)}
+                            </p>
+
+                            <div class="rating">
+                                <span>★</span>
+                                <strong>—</strong>
+                                <small>
+                                    هنوز امتیازی ثبت نشده
+                                </small>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="dynamic-profile-button"
+                                data-user-id="${musician.user_id}">
+                                مشاهده پروفایل
+                            </button>
+
+                        </div>
+                    `;
+
+                    musicianGrid.appendChild(card);
+
+                });
+
+                musicianGrid
+                    .querySelectorAll(
+                        ".dynamic-profile-button"
+                    )
+                    .forEach(button => {
+
+                        button.addEventListener(
+                            "click",
+                            () => {
+
+                                const userId =
+                                    button.dataset.userId;
+
+                                window.location.href =
+                                    "profile.html?id=" +
+                                    encodeURIComponent(
+                                        userId
+                                    );
+                            }
+                        );
+
+                    });
+            }
+
+        } catch (error) {
+
+            console.error(
+                "[Hamnavaz] Failed to load musicians:",
+                error
+            );
+
+        }
+    }
+
+
+    // ==================================================
+    // LOAD REAL INSTRUMENTS
+    // ==================================================
+
+    async function loadRealInstruments() {
+
+        try {
+
+            const instruments =
+                await hamnavazApi("/instrument/");
+
+            console.log(
+                "[Hamnavaz] instruments:",
+                instruments
+            );
+
+            if (!Array.isArray(instruments)) {
+                return;
+            }
+
+            const grid =
+                document.querySelector(
+                    ".instrument-grid"
+                );
+
+            if (!grid || !instruments.length) {
+                return;
+            }
+
+            grid.innerHTML = "";
+
+            const emojis = [
+                "🎸",
+                "🎹",
+                "🥁",
+                "🎻",
+                "🎷",
+                "🎤",
+                "🎺",
+                "🪕"
+            ];
+
+            instruments.forEach(
+                (instrument, index) => {
+
+                const button =
+                    document.createElement("button");
+
+                button.type = "button";
+
+                button.className =
+                    "instrument-card";
+
+                const emoji =
+                    emojis[index % emojis.length];
+
+                button.innerHTML = `
+                    <div class="instrument-art">
+                        <span class="instrument-emoji">
+                            ${emoji}
+                        </span>
+                    </div>
+
+                    <strong>
+                        ${escapeHtml(
+                            instrument.name ||
+                            "ساز"
+                        )}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(
+                            instrument.family ||
+                            "دسته‌بندی نشده"
+                        )}
+                    </small>
+                `;
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const name =
+                            instrument.name || "";
+
+                        window.location.href =
+                            "search.html?query=" +
+                            encodeURIComponent(name);
+
+                    }
+                );
+
+                grid.appendChild(button);
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "[Hamnavaz] Failed to load instruments:",
+                error
+            );
+
+        }
+    }
+
+
+    // ==================================================
+    // SAFE HTML
+    // ==================================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+
+    // ==================================================
+    // START
+    // ==================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            await Promise.all([
+                loadRealMusicians(),
+                loadRealInstruments()
+            ]);
+
+            console.log(
+                "[Hamnavaz] Dynamic Home loaded."
+            );
+
+        }
+    );
+
+})();
+</script>
+
+</body>
+</html>

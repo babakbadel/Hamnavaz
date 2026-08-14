@@ -1,0 +1,21 @@
+from app.repositories.musician_instrument import (
+    get_all,
+    create
+)
+
+from app.domains.music.instruments.model import UserInstrument as MusicianInstrument
+
+
+def list_items(db):
+    return get_all(db)
+
+
+def create_item(db, data):
+
+    item = MusicianInstrument(
+        musician_id=data.musician_id,
+        instrument_id=data.instrument_id,
+        rating=data.rating
+    )
+
+    return create(db, item)

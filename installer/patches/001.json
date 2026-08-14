@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "mkdir": [
+    "app/controllers",
+    "app/models",
+    "app/services"
+  ],
+  "create": [
+    "app/controllers/.gitkeep",
+    "app/models/.gitkeep",
+    "app/services/.gitkeep"
+  ]
+}

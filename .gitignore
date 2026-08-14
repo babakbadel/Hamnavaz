@@ -1,0 +1,94 @@
+﻿# =========================
+# Hamnavaz Git Ignore
+# =========================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+venv2/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Logs
+*.log
+hamnavaz_audit.txt
+installer/logs/
+
+# Node / Next / React
+node_modules/
+.next/
+dist/
+build/
+coverage/
+.turbo/
+.cache/
+
+# Editors / OS
+.vscode/
+.vscode-shared/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Git
+.git/
+
+# Temporary
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.backup_*
+*.before_*
+*.before-*
+*_backup.py
+*_broken.py
+*_checkpoint*.py
+
+# Backup folders
+backups/
+archive/
+legacy_models/
+*_backup/
+*_before_*/
+*_before_*
+
+# Database backups
+*.db.before_*
+*.db.old*
+*_backup*.db
+*backup*.db
+*migration_test.db
+*pre_migration_backup*.db
+
+# Archived migrations
+alembic/versions_archive_clean_reset/
+
+# Frontend backup files
+**/*.backup.*
+**/*.backup_*
+**/*.before-*
+**/*.before_*
+**/*.stable.*
+
+# Local SQLite databases
+*.db
