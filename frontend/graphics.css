@@ -1,0 +1,98 @@
+/* Lightweight visual layer: CSS/SVG-style geometry only, no new JS or assets. */
+.hero-visual::before{
+    content:"";
+    position:absolute;
+    width:min(470px,90%);
+    height:300px;
+    border-radius:50%;
+    border:1px solid rgba(56,189,248,.14);
+    background:
+        radial-gradient(circle at 50% 50%, transparent 0 35%, rgba(139,92,246,.055) 36% 36.5%, transparent 37%),
+        repeating-radial-gradient(ellipse at center, transparent 0 31px, rgba(56,189,248,.035) 32px 33px);
+    transform:rotate(-8deg);
+    pointer-events:none;
+    opacity:.9;
+}
+
+.hero-visual::after{
+    content:"";
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#38bdf8;
+    box-shadow:
+        118px -82px 0 1px rgba(56,189,248,.9),
+        -142px -44px 0 0 rgba(247,201,72,.9),
+        151px 70px 0 -1px rgba(139,92,246,.95),
+        -124px 92px 0 -2px rgba(52,211,153,.9),
+        0 0 22px rgba(56,189,248,.55);
+    pointer-events:none;
+    opacity:.85;
+}
+
+/* A small visual cue that the community is connected. */
+.hero-visual .hero-card::before{
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    flex:none;
+    background:var(--blue);
+    box-shadow:0 0 12px rgba(56,189,248,.65);
+}
+
+.hero-visual .card-rating::before{
+    background:var(--purple);
+    box-shadow:0 0 12px rgba(139,92,246,.65);
+}
+
+/* Give the instrument cards a quiet visual identity without extra images. */
+.instrument-card .instrument-art{
+    position:relative;
+    overflow:hidden;
+}
+
+.instrument-card .instrument-art::before{
+    content:"";
+    position:absolute;
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.09);
+    transform:rotate(-12deg);
+}
+
+.instrument-card .instrument-art::after{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(56,189,248,.45),transparent);
+    transform:rotate(-25deg);
+}
+
+/* Keep the visual layer cheap on small screens. */
+@media (max-width:760px){
+    .hero-visual::before{
+        width:330px;
+        height:220px;
+        opacity:.65;
+    }
+
+    .hero-visual::after{
+        transform:scale(.78);
+    }
+
+    .hero-visual .hero-card::before{
+        width:5px;
+        height:5px;
+    }
+}
+
+@media (prefers-reduced-motion:reduce){
+    .hero-visual::before,
+    .hero-visual::after{
+        animation:none!important;
+    }
+}
