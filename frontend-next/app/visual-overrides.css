@@ -1,0 +1,31 @@
+/* Hamnavaz visual layer: CSS-only polish, intentionally lightweight. */
+:root{--hv-orange:#ff7a18;--hv-cyan:#22d3ee;--hv-violet:#8b5cf6}
+.dynamic-stage-section{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(circle at 15% 35%,rgba(255,122,24,.11),transparent 30%),radial-gradient(circle at 82% 20%,rgba(34,211,238,.08),transparent 27%),linear-gradient(180deg,#070a10 0%,#05070c 100%)}
+.dynamic-stage-section::before,.dynamic-stage-section::after{content:"";position:absolute;pointer-events:none;border-radius:999px;opacity:.7}
+.dynamic-stage-section::before{width:34rem;height:34rem;right:-16rem;top:12%;background:radial-gradient(circle,rgba(139,92,246,.09),transparent 66%)}
+.dynamic-stage-section::after{width:28rem;height:28rem;left:-14rem;bottom:8%;background:radial-gradient(circle,rgba(34,211,238,.07),transparent 66%)}
+.dynamic-stage{position:relative;z-index:1}
+.stage-grid{position:relative;isolation:isolate}
+.stage-grid::before{content:"";position:absolute;inset:8% 5%;z-index:-1;border:1px solid rgba(255,255,255,.045);border-radius:32px;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,transparent,black 18%,black 82%,transparent)}
+.animated-profile-card,.animated-band-card{box-shadow:0 22px 70px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.055);backdrop-filter:blur(10px)}
+.animated-profile-card{position:relative;overflow:hidden}
+.animated-profile-card::after{content:"";position:absolute;width:18rem;height:18rem;left:50%;top:34%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(255,122,24,.13);box-shadow:0 0 80px rgba(255,122,24,.07);pointer-events:none}
+.profile-light{background:radial-gradient(circle,rgba(255,122,24,.18),transparent 68%)!important}
+.musician-aura{animation:hv-breathe 3.8s ease-in-out infinite}
+.instrument-floating{filter:drop-shadow(0 8px 20px rgba(255,122,24,.18));animation:hv-float 3.6s ease-in-out infinite}
+.animated-band-card{position:relative;overflow:hidden}
+.band-stage{position:relative}
+.band-stage::before{content:"";position:absolute;width:55%;height:42%;left:22%;top:4%;border-radius:50%;background:radial-gradient(ellipse,rgba(34,211,238,.11),transparent 68%);pointer-events:none}
+.group-lights span{box-shadow:0 0 22px currentColor}
+.stage-floor{box-shadow:0 -18px 60px rgba(139,92,246,.07)}
+.dynamic-stage-section .laser{opacity:.32;filter:blur(.4px);transform-origin:center}
+.dynamic-stage-section .laser-one{animation:hv-laser-one 9s ease-in-out infinite alternate}.dynamic-stage-section .laser-two{animation:hv-laser-two 11s ease-in-out infinite alternate}.dynamic-stage-section .laser-three{animation:hv-laser-three 13s ease-in-out infinite alternate}
+.stage-live-counter{box-shadow:0 0 0 1px rgba(34,211,238,.06),0 14px 40px rgba(0,0,0,.18)}
+.counter-dot,.live-dot{box-shadow:0 0 12px currentColor}
+@keyframes hv-breathe{0%,100%{transform:scale(.98);opacity:.72}50%{transform:scale(1.03);opacity:1}}
+@keyframes hv-float{0%,100%{transform:translate3d(0,0,0) rotate(-1deg)}50%{transform:translate3d(0,-6px,0) rotate(1deg)}}
+@keyframes hv-laser-one{from{transform:rotate(-8deg) translateY(-4px)}to{transform:rotate(5deg) translateY(8px)}}
+@keyframes hv-laser-two{from{transform:rotate(7deg) translateX(-8px)}to{transform:rotate(-4deg) translateX(10px)}}
+@keyframes hv-laser-three{from{transform:rotate(-3deg) translateX(5px)}to{transform:rotate(8deg) translateX(-6px)}}
+@media(max-width:768px){.stage-grid::before{inset:4% 0;border-radius:22px;background-size:30px 30px}.animated-profile-card::after{width:13rem;height:13rem}.dynamic-stage-section .laser{opacity:.2}}
+@media(prefers-reduced-motion:reduce){.musician-aura,.instrument-floating,.dynamic-stage-section .laser-one,.dynamic-stage-section .laser-two,.dynamic-stage-section .laser-three{animation:none!important}}
