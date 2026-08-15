@@ -253,6 +253,10 @@
 .footer .brand { margin-left: 0; }
 .footer .brand-mark { width: 34px; height: 34px; font-size: 18px; }
 
+.vinyl-label {
+  background: radial-gradient(circle at 30% 25%, var(--gold-light), var(--gold));
+}
+
 @keyframes vinylSpin {
   to { transform: rotate(360deg); }
 }
@@ -273,7 +277,7 @@
 
 @media (max-width: 560px) {
   .header { height: 68px; }
-  .mobile-menu { inset-top: 68px; }
+  .mobile-menu { inset: 68px 0 0; }
   .header-actions .icon-button { display: none; }
   .hero { width: min(100% - 24px, 1240px); padding-top: 35px; }
   .hero h1 { font-size: clamp(42px, 13vw, 60px); letter-spacing: -2px; }
