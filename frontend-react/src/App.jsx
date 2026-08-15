@@ -44,8 +44,7 @@ function App() {
     setActive('جستجو')
     setSearchBusy(true)
     try {
-      const params = query.trim() ? {} : {}
-      const data = await api.searchMusicians(params)
+      const data = await api.searchMusicians({})
       setMusicians(data.results || [])
       document.querySelector('#results')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     } catch {
@@ -102,10 +101,7 @@ function App() {
         <nav className="desktop-nav">
           {['خانه', 'نوازنده‌ها', 'گروه‌ها', 'همکاری', 'درباره ما'].map((item) => <a href={`#${item}`} key={item} className={active === item ? 'active' : ''} onClick={() => goTo(item)}>{item}</a>)}
         </nav>
-        <div className="header-actions">
-          <button className="icon-button" title="جستجو" onClick={() => document.querySelector('#search')?.focus()}>⌕</button>
-          <button className="avatar-button" title="ورود / ثبت‌نام" onClick={() => setAuthOpen(true)}>ب</button>
-        </div>
+        <div className="header-actions"><button className="icon-button" title="جستجو" onClick={() => document.querySelector('#search')?.focus()}>⌕</button><button className="avatar-button" title="ورود / ثبت‌نام" onClick={() => setAuthOpen(true)}>ب</button></div>
       </header>
 
       <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}><div className="mobile-menu-inner"><div className="mobile-menu-title">منوی همنواز</div>{['خانه', 'نوازنده‌ها', 'گروه‌ها', 'همکاری', 'درباره ما'].map((item) => <a href={`#${item}`} key={item} onClick={() => goTo(item)}><span>♪</span>{item}</a>)}</div></div>
@@ -116,27 +112,36 @@ function App() {
             <div className="eyebrow"><span className="live-dot" /> {statusText} • جامعه موسیقی</div>
             <h1>آدم‌های درست را<br /><span>برای موسیقی‌ات</span> پیدا کن.</h1>
             <p>همنواز جایی است برای پیدا کردن نوازنده، خواننده، مدرس و همکار موسیقی؛ از یک تمرین ساده تا ساختن یک گروه واقعی.</p>
-            <form className="hero-search" onSubmit={handleSearch}>
-              <span className="search-icon">⌕</span><input id="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="مثلاً: گیتاریست جَز در تهران" aria-label="جستجوی موسیقی" /><button type="submit" disabled={searchBusy}>{searchBusy ? 'در حال جستجو...' : 'جستجو'}</button>
-            </form>
+            <form className="hero-search" onSubmit={handleSearch}><span className="search-icon">⌕</span><input id="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="مثلاً: گیتاریست جَز در تهران" aria-label="جستجوی موسیقی" /><button type="submit" disabled={searchBusy}>{searchBusy ? 'در حال جستجو...' : 'جستجو'}</button></form>
             <div className="hero-buttons"><button className="primary-btn" onClick={() => goTo('نوازنده‌ها')}>پیدا کردن هم‌نواز <span>←</span></button><button className="ghost-btn" onClick={() => { setAuthMode('register'); setAuthOpen(true) }}>شروع همکاری</button></div>
             <div className="hero-stats"><div><strong>+۱۲۰۰</strong><span>نوازنده فعال</span></div><div><strong>+۳۵۰</strong><span>همکاری شکل‌گرفته</span></div><div><strong>۲۴/۷</strong><span>جامعه موسیقی</span></div></div>
           </div>
-          <div className="hero-stage" aria-label="نمایشگر موسیقی همنواز"><div className="stage-orbit orbit-one" /><div className="vinyl"><div className="vinyl-ring" /><div className="vinyl-ring ring-two" /><div className="vinyl-label">♫</div></div><div className="guitar-shape" aria-hidden="true"><div className="guitar-neck" /><div className="guitar-body"><div className="guitar-hole" /></div></div><div className="floating-note note-one">♪</div><div className="floating-note note-two">♫</div><div className="floating-note note-three">♬</div></div>
+          <div className="hero-stage" aria-label="نمایشگر موسیقی همنواز">
+            <div className="laser laser-red" /><div className="laser laser-green" /><div className="laser laser-blue" />
+            <div className="stage-orbit orbit-one" /><div className="stage-orbit orbit-two" />
+            <div className="vinyl"><div className="vinyl-ring" /><div className="vinyl-ring ring-two" /><div className="vinyl-label">♫</div></div>
+            <div className="guitar-shape" aria-hidden="true"><div className="guitar-neck" /><div className="guitar-body"><div className="guitar-hole" /></div></div>
+            <div className="floating-musician musician-one">♟<span>🎸</span></div><div className="floating-musician musician-two">♟<span>🎤</span></div><div className="floating-musician musician-three">♟<span>🥁</span></div>
+            <div className="floating-instrument instrument-one">🎹</div><div className="floating-instrument instrument-two">🎺</div>
+            <div className="floating-note note-one">♪</div><div className="floating-note note-two">♫</div><div className="floating-note note-three">♬</div>
+            <div className="pulse-core" />
+          </div>
+        </section>
+
+        <section className="charity-section" id="خیریه">
+          <div className="charity-copy"><span className="section-kicker">رسالت همنواز • 01</span><h2>موسیقی فقط برای شنیدن نیست؛<br /><span>برای ساختن هم هست. ❤️</span></h2><p>اولین رسالت همنواز، وصل کردن موسیقی به یک اثر انسانی واقعی است؛ کمک به کودکان و افراد کم‌برخوردار برای دسترسی به آموزش، ساز و فرصت تجربه موسیقی.</p><div className="charity-actions"><button className="primary-btn">حمایت از یک رویا <span>♥</span></button><button className="ghost-btn">دیدن داستان‌ها ←</button></div></div>
+          <div className="charity-stage"><div className="heart-pulse">♥</div><div className="charity-orbit" /><div className="charity-note cn-one">♪</div><div className="charity-note cn-two">♫</div><div className="charity-note cn-three">♬</div><div className="charity-card"><span>HAMNAVAZ CHARITY</span><strong>یک ساز، یک فرصت، یک آینده</strong><small>هر حمایت می‌تواند آغاز یک صدای تازه باشد.</small><div className="charity-progress"><i /></div><div className="charity-meta"><b>۷۴٪</b><span>تا هدف این ماه</span></div></div></div>
         </section>
 
         <section className="quick-section" id="نوازنده‌ها"><div className="section-heading"><div><span className="section-kicker">کشف استعدادها</span><h2>از صدای خودت شروع کن</h2></div><button className="text-link" onClick={() => handleSearch({ preventDefault() {} })}>مشاهده همه ←</button></div><div className="quick-grid">{quickLinks.map(([icon, label], index) => <button className="quick-card" key={label} onClick={() => { goTo(label); if (label === 'نوازنده‌ها') handleSearch({ preventDefault() {} }) }}><span className="quick-icon">{icon}</span><div><strong>{label}</strong><small>{index === 0 ? 'بر اساس ساز، شهر و سبک' : 'پیدا کردن و ارتباط مستقیم'}</small></div><span className="arrow">←</span></button>)}</div></section>
 
-        <section className="feature-section" id="results">
-          <div className="feature-card highlighted" style={{ gridColumn: '1 / -1' }}>
-            <span>LIVE DATA</span><strong>نوازنده‌های واقعی همنواز</strong>
-            {musicians.length === 0 ? <p>{searchBusy ? 'در حال دریافت اطلاعات...' : 'برای دیدن پروفایل‌های واقعی، جستجو را بزن.'}</p> : <div style={{ display: 'grid', gap: 12, marginTop: 16 }}>{musicians.map((m) => <button key={m.user_id || m.id} type="button" onClick={() => openProfile(m.user_id)} style={{ textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 14, border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, background: 'rgba(255,255,255,.03)', color: '#fff', cursor: 'pointer' }}><div><strong>{m.display_name || 'نوازنده همنواز'}</strong><p style={{ margin: '4px 0 0' }}>{m.city_name || m.city || 'شهر ثبت نشده'}{m.bio ? ` • ${m.bio}` : ''}</p></div><span>{m.is_verified ? '✓ تایید شده' : 'مشاهده پروفایل ←'}</span></button>)}</div>}
-          </div>
-        </section>
+        <section className="band-section" id="گروه‌ها"><div className="band-card"><div className="band-art"><div className="band-light" /><div className="band-person p1">♟</div><div className="band-person p2">♟</div><div className="band-person p3">♟</div><div className="band-person p4">♟</div><div className="band-eq">{levels.slice(0, 8).map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}</div></div><div className="band-copy"><span className="section-kicker">BAND CARD • LIVE</span><h2>گروه بعدی‌ات را <span>بساز.</span></h2><p>نوازنده‌هایی که دنبال سبک و انرژی مشابه‌اند را پیدا کن و یک گروه واقعی شکل بده.</p><div className="band-tags"><span>🎸 Guitar</span><span>🥁 Drums</span><span>🎹 Keys</span><span>🎤 Vocal</span></div><button className="primary-btn">پیدا کردن اعضای گروه <span>←</span></button></div></div></section>
+
+        <section className="feature-section" id="results"><div className="feature-card highlighted" style={{ gridColumn: '1 / -1' }}><span>LIVE DATA</span><strong>نوازنده‌های واقعی همنواز</strong>{musicians.length === 0 ? <p>{searchBusy ? 'در حال دریافت اطلاعات...' : 'برای دیدن پروفایل‌های واقعی، جستجو را بزن.'}</p> : <div style={{ display: 'grid', gap: 12, marginTop: 16 }}>{musicians.map((m) => <button key={m.user_id || m.id} type="button" onClick={() => openProfile(m.user_id)} style={{ textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 14, border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, background: 'rgba(255,255,255,.03)', color: '#fff', cursor: 'pointer' }}><div><strong>{m.display_name || 'نوازنده همنواز'}</strong><p style={{ margin: '4px 0 0' }}>{m.city_name || m.city || 'شهر ثبت نشده'}{m.bio ? ` • ${m.bio}` : ''}</p></div><span>{m.is_verified ? '✓ تایید شده' : 'مشاهده پروفایل ←'}</span></button>)}</div>}</div></section>
 
         <section className="studio-section" id="همکاری"><div className="studio-copy"><span className="section-kicker">استودیوی همنواز</span><h2>موسیقی را <span>زنده</span> ببین.</h2><p>یک نمای تعاملی از ریتم و صدا؛ پایه‌ای برای اکولایزر، پخش‌کننده و ابزارهای موسیقی همنواز.</p><button className="primary-btn" onClick={() => setPlaying((v) => !v)}>{playing ? 'توقف نمایش' : 'شروع نمایش'} <span>{playing ? 'Ⅱ' : '▶'}</span></button></div><div className="equalizer-card"><div className="eq-topline"><span>HAMNAVAZ / LIVE MIX</span><span className="eq-live"><i /> {playing ? 'LIVE' : 'PAUSED'}</span></div><div className="equalizer">{levels.map((height, index) => <div className="eq-track" key={index}><div className="eq-bar" style={{ height: `${height}%` }} /></div>)}</div><div className="eq-controls"><button onClick={() => setPlaying((v) => !v)}>{playing ? 'Ⅱ' : '▶'}</button><div className="eq-progress"><span /></div><span>03:24</span></div></div></section>
 
-        <section className="feature-section" id="گروه‌ها"><div className="feature-card"><span>01</span><strong>پروفایل موسیقایی</strong><p>سازها، مهارت‌ها، سبک، شهر و سابقه همکاری را یکجا نمایش بده.</p></div><div className="feature-card highlighted"><span>02</span><strong>پیدا کردن هم‌نواز</strong><p>با فیلترهای دقیق، آدمی را پیدا کن که واقعاً با موسیقی تو جور است.</p></div><div className="feature-card"><span>03</span><strong>همکاری و ارتباط</strong><p>درخواست همکاری، پیام، علاقه‌مندی و امتیازدهی در یک جریان ساده.</p></div></section>
+        <section className="feature-section" id="درباره ما"><div className="feature-card"><span>01</span><strong>پروفایل موسیقایی</strong><p>سازها، مهارت‌ها، سبک، شهر و سابقه همکاری را یکجا نمایش بده.</p></div><div className="feature-card highlighted"><span>02</span><strong>پیدا کردن هم‌نواز</strong><p>با فیلترهای دقیق، آدمی را پیدا کن که واقعاً با موسیقی تو جور است.</p></div><div className="feature-card"><span>03</span><strong>همکاری و اثر اجتماعی</strong><p>همکاری، پیام، علاقه‌مندی و خیریه در یک جریان ساده و انسانی.</p></div></section>
       </main>
 
       <footer className="footer"><div className="brand"><div className="brand-mark">♫</div><div><strong>همنواز</strong><small>HAMNAVAZ</small></div></div><span>موسیقی وقتی بهتر است که تنها نباشد.</span><span>© ۲۰۲۶</span></footer>
