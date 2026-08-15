@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowUpLeft, Heart, Menu, Mic2, Music2, Search, Sparkles, Users, X, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowLeft, ArrowUpLeft, Heart, Menu, Music2, Search, Sparkles, Users, X, Zap } from 'lucide-react'
 import { api } from '../src/lib/api'
 
-const seedBars = [32, 68, 46, 88, 54, 76, 38, 92, 58, 74, 44, 84, 52, 72, 36, 86, 48, 66, 42, 78]
+const seedBars = [38, 72, 50, 86, 58, 78, 44, 90, 62, 74, 48, 82, 56, 70]
 const quick = [
   { icon: '🎸', title: 'نوازنده‌ها', text: 'ساز، شهر، سبک و سطح' },
   { icon: '🎙️', title: 'خواننده‌ها', text: 'پیدا کردن صدای مناسب' },
@@ -15,18 +15,14 @@ const quick = [
 function Equalizer({ bars, compact = false }) {
   return (
     <div className={`eq ${compact ? 'eq-compact' : ''}`} aria-hidden="true">
-      {bars.map((height, index) => <i key={index} style={{ height: `${height}%`, animationDelay: `${index * -70}ms` }} />)}
+      {bars.map((height, index) => <i key={index} style={{ height: `${height}%`, animationDelay: `${index * -90}ms` }} />)}
     </div>
   )
 }
 
-function FloatingNotes() {
-  return <div className="notes" aria-hidden="true">{['♪', '♫', '♬', '♩', '♪', '♭', '♫'].map((note, i) => <span key={i} style={{ '--i': i }}>{note}</span>)}</div>
-}
-
 export default function Home() {
   const [bars, setBars] = useState(seedBars)
-  const [playing, setPlaying] = useState(true)
+  const [playing] = useState(true)
   const [menu, setMenu] = useState(false)
   const [query, setQuery] = useState('')
   const [musicians, setMusicians] = useState([])
@@ -36,12 +32,10 @@ export default function Home() {
   useEffect(() => {
     if (!playing) return
     const timer = setInterval(() => {
-      setBars(seedBars.map((v, i) => Math.max(14, Math.min(98, v + Math.sin(Date.now() / 190 + i * .9) * 30))))
-    }, 130)
+      setBars(seedBars.map((v, i) => Math.max(18, Math.min(92, v + Math.sin(Date.now() / 360 + i * .85) * 17))))
+    }, 240)
     return () => clearInterval(timer)
   }, [playing])
-
-  const pulse = useMemo(() => playing ? 'LIVE' : 'PAUSED', [playing])
 
   async function search(event) {
     event?.preventDefault?.()
@@ -77,7 +71,7 @@ export default function Home() {
 
       <section id="top" className="hero">
         <div className="hero-copy">
-          <div className="live-pill"><span /> {pulse} MUSIC <b>۰۱</b></div>
+          <div className="live-pill"><span /> {playing ? 'LIVE' : 'PAUSED'} MUSIC <b>۰۱</b></div>
           <h1>موسیقی را<br /><em>با آدم‌های</em><br />درست بساز.</h1>
           <p>همنواز، جایی برای پیدا کردن همنواز، ساختن گروه و تبدیل موسیقی به یک اثر انسانی واقعی است.</p>
           <form className="searchbar glass" onSubmit={search}>
@@ -87,7 +81,7 @@ export default function Home() {
           <div className="mini-proof"><span><b>+۱۲۰۰</b> نوازنده</span><i /><span><b>+۳۵۰</b> همکاری</span><i /><span><b>۲۴/۷</b> موسیقی</span></div>
         </div>
 
-        <div className="hero-visual">
+        <div className="hero-visual" aria-hidden="true">
           <div className="laser red" /><div className="laser orange" /><div className="laser violet" />
           <div className="orbital o1" /><div className="orbital o2" /><div className="orbital o3" />
           <div className="disc"><div className="disc-hole" /><div className="disc-label">♫</div></div>
@@ -97,7 +91,6 @@ export default function Home() {
           <div className="person p1">👤<b>🎸</b></div><div className="person p2">👤<b>🎤</b></div><div className="person p3">👤<b>🥁</b></div>
           <div className="instrument inst1">🎹</div><div className="instrument inst2">🎺</div><div className="instrument inst3">🎸</div>
           <div className="core"><span /><span /><span /></div>
-          <FloatingNotes />
         </div>
       </section>
 
@@ -123,7 +116,7 @@ export default function Home() {
 
       <section id="bands" className="bands section-shell">
         <div className="band-copy"><span className="eyebrow">BUILD A BAND</span><h2>چهار نفر.<br /><em>یک صدا.</em></h2><p>از نوازنده‌های پراکنده، یک گروه واقعی بساز. همنواز آدم‌ها را بر اساس ساز، شهر، سطح و سبک به هم نزدیک می‌کند.</p><button className="orange-btn">ساختن گروه <Users /></button></div>
-        <div className="band-stage glass"><div className="band-rays" /><div className="band-member bm1">👤<b>🎸</b></div><div className="band-member bm2">👤<b>🥁</b></div><div className="band-member bm3">👤<b>🎹</b></div><div className="band-member bm4">👤<b>🎤</b></div><div className="band-title"><span>NEW BAND</span><b>NOISE / 04</b></div><div className="band-eq"><Equalizer bars={bars.slice(0, 14)} compact /></div></div>
+        <div className="band-stage glass"><div className="band-rays" /><div className="band-member bm1">👤<b>🎸</b></div><div className="band-member bm2">👤<b>🥁</b></div><div className="band-member bm3">👤<b>🎹</b></div><div className="band-member bm4">👤<b>🎤</b></div><div className="band-title"><span>NEW BAND</span><b>NOISE / 04</b></div><div className="band-eq"><Equalizer bars={bars.slice(0, 12)} compact /></div></div>
       </section>
 
       <section id="mission" className="mission section-shell">
