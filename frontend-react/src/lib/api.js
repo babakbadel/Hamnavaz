@@ -5,36 +5,25 @@ async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
   })
-
   const data = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(data?.detail || 'خطا در ارتباط با سرور')
-  }
+  if (!response.ok) throw new Error(data?.detail || 'خطا در ارتباط با سرور')
   return data
 }
 
 export const api = {
-  register: (payload) => request('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }),
-
+  register: (payload) => request('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
   login: async (payload) => {
-    const data = await request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    })
+    const data = await request('/auth/login', { method: 'POST', body: JSON.stringify(payload) })
     localStorage.setItem('hamnavaz_token', data.access_token)
     return data
   },
-
   logout: () => localStorage.removeItem('hamnavaz_token'),
-
+  isLoggedIn: () => Boolean(localStorage.getItem('hamnavaz_token')),
   searchMusicians: (params = {}) => {
     const query = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
@@ -42,6 +31,5 @@ export const api = {
     })
     return request(`/search/musicians${query.toString() ? `?${query}` : ''}`)
   },
-
   searchInstruments: (q = '') => request(`/search/instruments${q ? `?q=${encodeURIComponent(q)}` : ''}`),
 }
