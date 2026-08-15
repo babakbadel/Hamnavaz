@@ -31,5 +31,7 @@ export const api = {
     })
     return request(`/search/musicians${query.toString() ? `?${query}` : ''}`)
   },
+  getMusician: (userId) => request(`/musician/${userId}`),
+  getMyProfile: () => request('/musician/me'),
   searchInstruments: (q = '') => request(`/search/instruments${q ? `?q=${encodeURIComponent(q)}` : ''}`),
 }
