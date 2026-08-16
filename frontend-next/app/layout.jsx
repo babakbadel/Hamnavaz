@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./visual-overrides.css";
+import HomeCommunityInjector from "./HomeCommunityInjector";
 
 export const metadata = {
   title: "همنواز | موسیقی را با هم بسازیم",
@@ -10,7 +11,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fa" dir="rtl">
-      <body>{children}</body>
+      <body>
+        {children}
+        <HomeCommunityInjector />
+      </body>
     </html>
   );
 }
