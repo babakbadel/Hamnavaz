@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
 
 from app.database.session import create_tables
 from app.api.router import register_routers
@@ -35,7 +34,11 @@ register_routers(app)
 
 @app.get("/")
 def root():
-    return RedirectResponse(url="https://babakbadel.github.io/Hamnavaz/", status_code=307)
+    return {
+        "name": "Hamnavaz API",
+        "version": "1.0.0",
+        "status": "ok",
+    }
 
 
 @app.get("/health")
