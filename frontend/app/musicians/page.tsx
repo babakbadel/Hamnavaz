@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { Musician, searchMusicians } from "../../lib/api";
 
@@ -10,18 +10,30 @@ export default function MusiciansPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
+  async function runSearch(term = q) {
     setLoading(true); setError("");
-    try { setItems((await searchMusicians({ limit: 30 })).results); }
+    try { setItems((await searchMusicians({ q: term, limit: 30 })).results); }
     catch { setError("ارتباط با سرور برقرار نشد. Backend را اجرا کنید."); }
     finally { setLoading(false); }
+  }
+
+  useEffect(() => {
+    const term = new URLSearchParams(window.location.search).get("q") || "";
+    setQ(term);
+    if (term) void runSearch(term);
+  }, []);
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    const term = q.trim();
+    window.history.replaceState(null, "", term ? `/musicians?q=${encodeURIComponent(term)}` : "/musicians");
+    void runSearch(term);
   }
 
   return <main className="container page-shell">
     <nav className="nav"><Link className="brand" href="/"><span>♪</span> همنواز</Link><Link className="login" href="/">خانه</Link></nav>
     <header className="page-head"><p className="eyebrow">کشف جامعه موسیقی</p><h1>نوازنده <span>مناسبت</span> را پیدا کن.</h1><p className="lead">ساز، شهر و سبک خودت را انتخاب کن و آدم‌هایی را پیدا کن که برای تمرین، اجرا یا همکاری آماده‌اند.</p></header>
-    <form className="search-box" onSubmit={submit}><input value={q} onChange={e=>setQ(e.target.value)} placeholder="نام، ساز یا شهر..." aria-label="جستجو"/><button>{loading ? "در حال جستجو..." : "جستجو"}</button></form>
+    <form className="search-box" onSubmit={submit}><input value={q} onChange={e=>setQ(e.target.value)} placeholder="نام، ساز یا شهر..." aria-label="جستجو"/><button type="submit" disabled={loading}>{loading ? "در حال جستجو..." : "جستجو"}</button></form>
     {error && <p className="error">{error}</p>}
     <section className="results-grid">
       {items.map(m => <Link className="musician-card" key={m.id} href={`/musicians/${m.user_id}`}>
