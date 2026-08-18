@@ -10,46 +10,17 @@ const people = [
   { initials:"MA", name:"مریم احمدی", instrument:"درام", city:"اصفهان", skill:"مقدماتی", ordinary:"4.7", collab:"5.0", online:false, tone:"rose" },
 ];
 
-const modes = [
-  ["online","آنلاین‌ها",Wifi],
-  ["top","بیشترین امتیاز",Star],
-  ["city","براساس شهر",MapPin],
-  ["skill","براساس مهارت",Users],
-  ["instrument","براساس ساز",Guitar],
-];
+const modes = [["online","آنلاین‌ها",Wifi],["top","بیشترین امتیاز",Star],["city","براساس شهر",MapPin],["skill","براساس مهارت",Users],["instrument","براساس ساز",Guitar]];
 
 export default function HamnavazFinder(){
   const [mode,setMode]=useState("online");
   const [query,setQuery]=useState("");
-
-  const visible = useMemo(()=>{
-    let list=[...people];
-    if(mode==="online") list=list.filter(p=>p.online);
-    if(mode==="top") list.sort((a,b)=>Number(b.collab)-Number(a.collab));
-    if(mode==="city") list.sort((a,b)=>a.city.localeCompare(b.city,"fa"));
-    if(mode==="skill") list.sort((a,b)=>({"حرفه‌ای":0,"متوسط":1,"مقدماتی":2}[a.skill]??9)-({"حرفه‌ای":0,"متوسط":1,"مقدماتی":2}[b.skill]??9));
-    if(mode==="instrument") list.sort((a,b)=>a.instrument.localeCompare(b.instrument,"fa"));
-    const q=query.trim();
-    if(q) list=list.filter(p=>`${p.name} ${p.instrument} ${p.city} ${p.skill}`.includes(q));
-    return list;
-  },[mode,query]);
-
+  const visible=useMemo(()=>{let list=[...people];if(mode==="online")list=list.filter(p=>p.online);if(mode==="top")list.sort((a,b)=>Number(b.collab)-Number(a.collab));if(mode==="city")list.sort((a,b)=>a.city.localeCompare(b.city,"fa"));if(mode==="skill")list.sort((a,b)=>( {"حرفه‌ای":0,"متوسط":1,"مقدماتی":2}[a.skill]??9)-( {"حرفه‌ای":0,"متوسط":1,"مقدماتی":2}[b.skill]??9));if(mode==="instrument")list.sort((a,b)=>a.instrument.localeCompare(b.instrument,"fa"));const q=query.trim();if(q)list=list.filter(p=>`${p.name} ${p.instrument} ${p.city} ${p.skill}`.includes(q));return list;},[mode,query]);
   return <div className="finder">
-    <div className="finder-search">
-      <Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="ساز، شهر، مهارت یا نام نوازنده..."/><button onClick={()=>setQuery("")}>پاک کن</button>
-    </div>
-    <div className="finder-tabs" role="tablist">
-      {modes.map(([id,label,Icon])=><button key={id} className={mode===id?"active":""} onClick={()=>setMode(id)} role="tab" aria-selected={mode===id}><Icon size={15}/>{label}</button>)}
-    </div>
+    <style>{`.finder{margin:0 0 32px;padding:18px;border:1px solid rgba(255,255,255,.08);border-radius:28px;background:linear-gradient(145deg,rgba(255,174,50,.055),rgba(255,255,255,.018));box-shadow:0 18px 70px rgba(0,0,0,.18)}.finder-search{display:flex;align-items:center;gap:10px;padding:7px 8px;border:1px solid rgba(255,255,255,.09);background:#090b11;border-radius:17px}.finder-search svg{color:#777}.finder-search input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#fff;padding:12px;font-size:12px}.finder-search input::placeholder{color:#555}.finder-search button{border:1px solid rgba(255,255,255,.08);background:#ffffff05;color:#777;border-radius:11px;padding:10px 12px;font-size:9px}.finder-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.finder-tabs button{display:flex;justify-content:center;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.07);background:#ffffff03;color:#777;border-radius:13px;padding:12px 8px;font-size:9px;transition:.2s}.finder-tabs button:hover{color:#fff;border-color:#ffffff18}.finder-tabs button.active{color:#17120a;background:linear-gradient(140deg,#ffe39a,#ffae32);border-color:#ffae32;box-shadow:0 8px 30px rgba(255,174,50,.12)}.finder-context{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:18px 3px 12px}.finder-context b{display:block;font-size:14px}.finder-context span{display:block;color:#555;font-size:8px;margin-top:4px}.finder-context>small{color:#555;font-size:9px}.finder-people{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.finder-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:15px;border:1px solid rgba(255,255,255,.07);border-radius:20px;background:#0b0e15;transition:.25s}.finder-card:hover{transform:translateY(-3px);border-color:rgba(255,174,50,.22)}.finder-card-main{min-width:0}.finder-name{display:flex;align-items:center;gap:7px}.finder-name h3{margin:0;font-size:12px}.finder-card-main p{margin:5px 0;color:#888;font-size:9px}.finder-card-main small{color:#555;font-size:8px}.finder-online{font-size:7px;color:#65ffa8;white-space:nowrap}.finder-online i{display:inline-block;width:5px;height:5px;border-radius:50%;background:#52ff9a;box-shadow:0 0 8px #52ff9a;margin-left:4px}.finder-ratings{display:flex;flex-direction:column;gap:5px}.finder-ratings span{font-size:8px;padding:4px 6px;border-radius:6px;background:#ffffff05}.finder-profile{grid-column:2/4;justify-self:start;border:0;background:none;color:#aaa;font-size:8px;padding:4px 0}.finder-empty{grid-column:1/-1;text-align:center;padding:30px;color:#666;font-size:10px}@media(max-width:850px){.finder{padding:13px;border-radius:22px}.finder-tabs{display:flex;overflow:auto;padding-bottom:3px}.finder-tabs button{flex:0 0 auto;white-space:nowrap;padding:11px 13px}.finder-context{display:block}.finder-context>small{display:block;margin-top:8px}.finder-people{grid-template-columns:1fr}.finder-card{grid-template-columns:auto 1fr auto}.finder-card .avatar.large{width:54px;height:54px}.finder-profile{grid-column:2/4}.finder-search input{font-size:10px}.finder-search button{padding-inline:9px}}@media(prefers-reduced-motion:reduce){.finder-card,.finder-tabs button{transition:none!important}}`}</style>
+    <div className="finder-search"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="ساز، شهر، مهارت یا نام نوازنده..."/><button onClick={()=>setQuery("")}>پاک کن</button></div>
+    <div className="finder-tabs" role="tablist">{modes.map(([id,label,Icon])=><button key={id} className={mode===id?"active":""} onClick={()=>setMode(id)} role="tab" aria-selected={mode===id}><Icon size={15}/>{label}</button>)}</div>
     <div className="finder-context"><div><b>{modes.find(x=>x[0]===mode)?.[1]}</b><span>{visible.length} نتیجه قابل مشاهده</span></div><small>فیلترها را عوض کن و آدم مناسب مسیرت را پیدا کن.</small></div>
-    <div className="finder-people">
-      {visible.map(p=><article className="finder-card" key={p.name}>
-        <div className={`avatar ${p.tone} large`}>{p.initials}</div>
-        <div className="finder-card-main"><div className="finder-name"><h3>{p.name}</h3>{p.online&&<span className="finder-online"><i/> آنلاین</span>}</div><p>{p.instrument} · {p.skill}</p><small>📍 {p.city}</small></div>
-        <div className="finder-ratings"><span className="ordinary">★ {p.ordinary}</span><span className="collab">★ {p.collab}</span></div>
-        <button className="finder-profile">پروفایل</button>
-      </article>)}
-      {!visible.length&&<div className="finder-empty">نوازنده‌ای با این مشخصات پیدا نشد؛ جست‌وجو را کمی بازتر کن.</div>}
-    </div>
+    <div className="finder-people">{visible.map(p=><article className="finder-card" key={p.name}><div className={`avatar ${p.tone} large`}>{p.initials}</div><div className="finder-card-main"><div className="finder-name"><h3>{p.name}</h3>{p.online&&<span className="finder-online"><i/> آنلاین</span>}</div><p>{p.instrument} · {p.skill}</p><small>📍 {p.city}</small></div><div className="finder-ratings"><span className="ordinary">★ {p.ordinary}</span><span className="collab">★ {p.collab}</span></div><button className="finder-profile">پروفایل</button></article>)}{!visible.length&&<div className="finder-empty">نوازنده‌ای با این مشخصات پیدا نشد؛ جست‌وجو را کمی بازتر کن.</div>}</div>
   </div>;
 }
