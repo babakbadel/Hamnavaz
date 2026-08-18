@@ -1,15 +1,11 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-  // Canonical frontend for Hamnavaz GitHub Pages deployment.
+  // Single canonical frontend for Hamnavaz.
   output: "export",
-  images: {
-    unoptimized: true,
-  },
-
-  allowedDevOrigins: [
-    "127.0.0.1",
-    "localhost",
-  ],
+  basePath: "/Hamnavaz",
+  assetPrefix: "/Hamnavaz/",
+  trailingSlash: true,
+  images: { unoptimized: true },
 };
 
 export default nextConfig;
