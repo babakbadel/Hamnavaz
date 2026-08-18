@@ -2,8 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
 
 from app.database.session import create_tables
 from app.api.router import register_routers
@@ -34,16 +33,9 @@ app.add_middleware(
 register_routers(app)
 
 
-app.mount(
-    "/frontend",
-    StaticFiles(directory="frontend"),
-    name="frontend",
-)
-
-
 @app.get("/")
 def root():
-    return FileResponse("frontend/index.html")
+    return RedirectResponse(url="https://babakbadel.github.io/Hamnavaz/", status_code=307)
 
 
 @app.get("/health")
