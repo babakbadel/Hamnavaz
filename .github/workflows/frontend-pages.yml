@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'frontend/**'
+      - 'frontend-next/**'
       - '.github/workflows/frontend-pages.yml'
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: frontend-next
     steps:
       - name: Checkout clean workspace
         uses: actions/checkout@v4
@@ -55,13 +55,13 @@ jobs:
           test -d out
           test -f out/index.html
           test -d out/_next
-          echo "Fresh static export verified"
+          echo "Fresh static output verified from frontend-next"
           find out/_next -maxdepth 2 -type f | head -20
 
       - name: Upload fresh Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/out
+          path: frontend-next/out
 
   deploy:
     needs: build
