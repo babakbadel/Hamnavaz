@@ -1,19 +1,172 @@
-import { ArrowLeft, ChevronLeft, Heart, Menu, Music2, Search, Star, Users, X } from "lucide-react";
+"use client";
 
-const people=[["AR","آرمان رضایی","گیتار","تهران","متوسط","4.9","5.0","gold"],["SN","سارا نادری","ویولن","اصفهان","حرفه‌ای","4.9","4.8","violet"],["KM","کیان مرادی","پیانو","شیراز","متوسط","4.8","4.9","cyan"],["MA","مریم احمدی","درام","اصفهان","مقدماتی","4.7","5.0","rose"]];
-const teachers=[["AK","امیر کریمی","گیتار کلاسیک","تهران","4.9"],["NM","نگار موسوی","پیانو","اصفهان","5.0"],["SF","سامان فرهادی","ساز ایرانی","شیراز","4.8"]];
-const requests=[["RM","دنبال گیتاریست مبتدی","اصفهان · برای تمرین و پیشرفت گروهی","gold"],["HN","دنبال نوازنده پیانو","تهران · سطح متوسط · جَز","violet"],["SA","گروه در حال تکمیل","شیراز · یک درامر برای اجرا","cyan"]];
-function Avatar({initials,tone="gold",large=false}){return <div className={`avatar ${tone} ${large?"large":""}`}>{initials}</div>}
-function Rating({ordinary,collab}){return <div className="ratings"><span className="ordinary" title="امتیاز معمولی؛ نظر کاربران">★ {ordinary}</span><span className="collab" title="امتیاز همکاری؛ پس از همکاری واقعی">★ {collab}</span></div>}
-function Head({label,title,text}){return <div className="section-head"><div><small>{label}</small><h2>{title}</h2>{text&&<p>{text}</p>}</div><a href="#find">مشاهده همه <ChevronLeft size={16}/></a></div>}
-function LiveStage(){return <div className="stage"><div className="beam b1"/><div className="beam b2"/><div className="ring r1"/><div className="ring r2"/><div className="core"><Music2 size={48}/><b>همنواز</b><small>PLAY TOGETHER</small></div><div className="instrument i1">🎸<small>گیتار</small></div><div className="instrument i2">🎻<small>ویولن</small></div><div className="instrument i3">🎹<small>پیانو</small></div><div className="instrument i4">🥁<small>درام</small></div><div className="eq">{Array.from({length:18},(_,i)=><i key={i} style={{animationDelay:`-${i*70}ms`}}/>)}</div><div className="online"><span/> ۱٬۲۸۴ نوازنده آنلاین</div></div>}
-export default function Home(){return <main dir="rtl" className="site"><header className="nav"><div className="nav-inner"><button className="menu-btn"><Menu/></button><a className="brand" href="#"><span className="brand-icon"><Music2/></span><span><b>همنواز</b><small>HAMNAVAZ</small></span></a><nav><a href="#find">همنواز</a><a href="#people">آدم‌ها</a><a href="#groups">گروه‌ها</a><a href="#teachers">اساتید</a><a href="#charity">خیریه</a></nav><a className="cta desktop" href="#find">شروع کن <ArrowLeft size={16}/></a></div></header>
-<section className="hero wrap"><div className="hero-copy"><div className="kicker"><i/> جامعه زنده موسیقی</div><h1>موسیقی را<br/><em>با هم</em> بسازیم.</h1><p>از اولین تمرین تا ساختن یک گروه و رسیدن به اجرای واقعی؛ آدم‌های هم‌مسیرت را پیدا کن.</p><form className="search"><Search size={19}/><input placeholder="مثلاً گیتاریست مبتدی در اصفهان"/><button>پیدا کن <ArrowLeft size={16}/></button></form><div className="chips"><button>گیتاریست · اصفهان</button><button>استاد پیانو</button><button>گروه جَز · تهران</button></div></div><LiveStage/></section>
-<section className="numbers wrap"><div><b>۱٬۲۸۴</b><span>آنلاین</span></div><div><b>۸۶</b><span>گروه در حال شکل‌گیری</span></div><div><b>۲۴</b><span>اجرای پیش‌رو</span></div><div><b>۳۱۲</b><span>همکاری موفق</span></div></section>
-<section id="find" className="section wrap"><Head label="اولین قدم" title={<>آدم درست را <em>پیدا کن.</em></>} text="ساز، شهر و سطح مهارتت را انتخاب کن؛ بقیه مسیر از همین‌جا شروع می‌شود."/><div className="path-grid"><article><b>01</b><Music2/><h3>همنواز پیدا کن</h3><p>برای تمرین، پیشرفت یا یک گروه تازه.</p></article><article><b>02</b><Users/><h3>گروه بساز</h3><p>آدم‌هایی که با مسیر موسیقی تو هم‌جهت‌اند.</p></article><article><b>03</b><Heart/><h3>به یک اجرا برس</h3><p>از تمرین‌های کوچک تا یک صحنه واقعی.</p></article></div></section>
-<section id="people" className="section dark"><div className="wrap"><Head label="همین حالا اینجا هستند" title={<>آدم‌های <em>در جریان</em></>} text="پروفایل‌هایی که می‌توانند شروع یک ارتباط باشند."/><div className="people">{people.map(p=><article className="person" key={p[1]}><div className="status"><span/> آنلاین</div><div className="person-row"><Avatar initials={p[0]} tone={p[7]} large/><div><h3>{p[1]}</h3><p>{p[2]} · {p[4]}</p><small>📍 {p[3]}</small></div></div><Rating ordinary={p[5]} collab={p[6]}/><div className="person-bottom"><span>دنبال همنواز</span><button>پروفایل <ArrowLeft size={14}/></button></div></article>)}</div></div></section>
-<section id="teachers" className="section wrap"><Head label="آموزش" title={<>اساتید برتر و <em>آنلاین</em></>} text="کسی که مسیر را بلد است، باید راحت پیدا شود."/><div className="teachers">{teachers.map(t=><article key={t[1]}><Avatar initials={t[0]} tone="violet"/><div><b>{t[1]}</b><span>{t[2]}</span><small>📍 {t[3]} · 🟢 آنلاین</small></div><strong>★ {t[4]}</strong></article>)}</div></section>
-<section id="groups" className="section dark"><div className="wrap"><Head label="درخواست‌های زنده" title={<>شاید همین حالا کسی <em>منتظر ساز توست.</em></>}/><div className="requests">{requests.map(r=><article key={r[1]} className={r[3]}><Avatar initials={r[0]} tone={r[3]}/><div><h3>{r[1]}</h3><p>{r[2]}</p></div><button><ArrowLeft size={17}/></button></article>)}</div></div></section>
-<section id="charity" className="charity wrap"><div><small>موسیقی × انسانیت</small><h2>یک گروه شکل بگیرد،<br/><em>یک اجرای ماندگار.</em></h2><p>همنوازها می‌توانند کنار هم برای مؤسسات خیریه، سالمندان، بیماران و مراکز حمایتی اجرا کنند؛ موسیقی اینجا فقط شنیده نمی‌شود، اثر می‌گذارد.</p><a className="cta" href="#groups">گروه‌های در حال شکل‌گیری <ArrowLeft size={16}/></a></div><div className="heart-art"><Heart size={32}/><b>یک نت<br/>یک گروه<br/>یک اثر</b></div></section>
-<section className="section wrap"><Head label="اعتماد" title={<>دو امتیاز، دو <em>تجربه.</em></>}/><div className="rating-cards"><article><Star className="gold-icon" size={42}/><h3>امتیاز معمولی</h3><p>نظر و تجربه کاربران درباره پروفایل و حضور فرد در جامعه.</p></article><article><Star className="violet-icon" size={42}/><h3>امتیاز همکاری</h3><p>امتیازی که بعد از یک همکاری واقعی شکل می‌گیرد.</p></article></div></section>
-<footer><div className="wrap footer-inner"><div className="brand"><span className="brand-icon"><Music2/></span><span><b>همنواز</b><small>HAMNAVAZ</small></span></div><span>از یک نت شروع می‌شود.</span><nav><a href="#find">همنواز</a><a href="#groups">گروه‌ها</a><a href="#teachers">آموزش</a><a href="#charity">خیریه</a></nav></div></footer></main>}
+import { ArrowLeft, ChevronLeft, Heart, Menu, Music2, Search, Star, Users, X, Sparkles } from "lucide-react";
+import { useState } from "react";
+
+const people = [
+  ["AR", "آرمان رضایی", "گیتار", "تهران", "متوسط", "4.9", "5.0", "gold"],
+  ["SN", "سارا نادری", "ویولن", "اصفهان", "حرفه‌ای", "4.9", "4.8", "violet"],
+  ["KM", "کیان مرادی", "پیانو", "شیراز", "متوسط", "4.8", "4.9", "cyan"],
+  ["MA", "مریم احمدی", "درام", "اصفهان", "مقدماتی", "4.7", "5.0", "rose"],
+];
+
+const teachers = [
+  ["AK", "امیر کریمی", "گیتار کلاسیک", "تهران", "4.9"],
+  ["NM", "نگار موسوی", "پیانو", "اصفهان", "5.0"],
+  ["SF", "سامان فرهادی", "ساز ایرانی", "شیراز", "4.8"],
+];
+
+const requests = [
+  ["RM", "دنبال گیتاریست مبتدی", "اصفهان · تمرین و پیشرفت گروهی", "gold"],
+  ["HN", "دنبال نوازنده پیانو", "تهران · سطح متوسط · جَز", "violet"],
+  ["SA", "گروه در حال تکمیل", "شیراز · یک درامر برای اجرا", "cyan"],
+];
+
+function Avatar({ initials, tone = "gold", large = false }) {
+  return <div className={`avatar ${tone} ${large ? "large" : ""}`}>{initials}</div>;
+}
+
+function Rating({ ordinary, collab }) {
+  return (
+    <div className="ratings">
+      <span className="ordinary" title="امتیاز معمولی؛ نظر کاربران">★ {ordinary}</span>
+      <span className="collab" title="امتیاز همکاری؛ پس از همکاری واقعی">★ {collab}</span>
+    </div>
+  );
+}
+
+function Head({ label, title, text }) {
+  return (
+    <div className="section-head">
+      <div>
+        <small>{label}</small>
+        <h2>{title}</h2>
+        {text && <p>{text}</p>}
+      </div>
+      <a href="#find">مشاهده همه <ChevronLeft size={16} /></a>
+    </div>
+  );
+}
+
+function LiveStage() {
+  return (
+    <div className="stage" aria-label="صحنه زنده همنواز">
+      <div className="stage-grid" />
+      <div className="beam b1" />
+      <div className="beam b2" />
+      <div className="ring r1" />
+      <div className="ring r2" />
+      <div className="ring r3" />
+      <div className="core">
+        <Sparkles size={17} />
+        <Music2 size={42} />
+        <b>همنواز</b>
+        <small>PLAY TOGETHER</small>
+      </div>
+      <div className="instrument i1"><b>G</b><small>گیتار</small></div>
+      <div className="instrument i2"><b>V</b><small>ویولن</small></div>
+      <div className="instrument i3"><b>P</b><small>پیانو</small></div>
+      <div className="instrument i4"><b>D</b><small>درام</small></div>
+      <div className="eq" aria-hidden="true">{Array.from({ length: 18 }, (_, i) => <i key={i} style={{ animationDelay: `-${i * 70}ms` }} />)}</div>
+      <div className="live-pill"><span /> ۱٬۲۸۴ نوازنده آنلاین</div>
+    </div>
+  );
+}
+
+export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <main dir="rtl" className="site">
+      <header className="nav">
+        <div className="nav-inner">
+          <button className="menu-btn" onClick={() => setMenuOpen(v => !v)} aria-label="باز کردن منو">
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          <a className="brand" href="#" onClick={() => setMenuOpen(false)}>
+            <span className="brand-icon"><Music2 size={20} /></span>
+            <span><b>همنواز</b><small>HAMNAVAZ</small></span>
+          </a>
+          <nav className="desktop-nav">
+            <a href="#find">همنواز</a><a href="#people">آدم‌ها</a><a href="#groups">گروه‌ها</a><a href="#teachers">اساتید</a><a href="#charity">خیریه</a>
+          </nav>
+          <a className="cta desktop" href="#find">شروع کن <ArrowLeft size={16} /></a>
+        </div>
+        {menuOpen && (
+          <div className="mobile-menu">
+            <a href="#find" onClick={() => setMenuOpen(false)}>همنواز</a>
+            <a href="#people" onClick={() => setMenuOpen(false)}>آدم‌ها</a>
+            <a href="#groups" onClick={() => setMenuOpen(false)}>گروه‌ها</a>
+            <a href="#teachers" onClick={() => setMenuOpen(false)}>اساتید</a>
+            <a href="#charity" onClick={() => setMenuOpen(false)}>خیریه</a>
+          </div>
+        )}
+      </header>
+
+      <section className="hero wrap">
+        <div className="hero-copy">
+          <div className="kicker"><i /> جامعه زنده موسیقی</div>
+          <h1>موسیقی را<br /><em>با هم</em> بسازیم.</h1>
+          <p>از اولین تمرین تا ساختن یک گروه و رسیدن به اجرای واقعی؛ آدم‌های هم‌مسیرت را پیدا کن.</p>
+          <form className="search" onSubmit={e => e.preventDefault()}>
+            <Search size={19} />
+            <input aria-label="جستجوی نوازنده" placeholder="مثلاً گیتاریست مبتدی در اصفهان" />
+            <button type="submit">پیدا کن <ArrowLeft size={16} /></button>
+          </form>
+          <div className="chips"><button>گیتاریست · اصفهان</button><button>استاد پیانو</button><button>گروه جَز · تهران</button></div>
+          <div className="hero-note"><span>01</span><div><b>از آدم درست شروع کن</b><small>یک ساز، یک شهر، یک مسیر.</small></div></div>
+        </div>
+        <LiveStage />
+      </section>
+
+      <section className="numbers wrap">
+        <div><b>۱٬۲۸۴</b><span>نوازنده آنلاین</span></div><div><b>۸۶</b><span>گروه در حال شکل‌گیری</span></div><div><b>۲۴</b><span>اجرای پیش‌رو</span></div><div><b>۳۱۲</b><span>همکاری موفق</span></div>
+      </section>
+
+      <section id="find" className="section wrap">
+        <Head label="اولین قدم" title={<>آدم درست را <em>پیدا کن.</em></>} text="ساز، شهر و سطح مهارتت را انتخاب کن؛ بقیه مسیر از همین‌جا شروع می‌شود." />
+        <div className="path-grid">
+          <article><b>01</b><Music2 /><h3>همنواز پیدا کن</h3><p>برای تمرین، پیشرفت یا یک گروه تازه.</p></article>
+          <article><b>02</b><Users /><h3>گروه بساز</h3><p>آدم‌هایی که با مسیر موسیقی تو هم‌جهت‌اند.</p></article>
+          <article><b>03</b><Heart /><h3>به یک اجرا برس</h3><p>از تمرین‌های کوچک تا یک صحنه واقعی.</p></article>
+        </div>
+      </section>
+
+      <section id="people" className="section dark"><div className="wrap">
+        <Head label="همین حالا اینجا هستند" title={<>آدم‌های <em>در جریان</em></>} text="پروفایل‌هایی که می‌توانند شروع یک ارتباط باشند." />
+        <div className="people">{people.map(p => <article className="person" key={p[1]}>
+          <div className="status"><span /> آنلاین</div>
+          <div className="person-row"><Avatar initials={p[0]} tone={p[7]} large /><div><h3>{p[1]}</h3><p>{p[2]} · {p[4]}</p><small>📍 {p[3]}</small></div></div>
+          <Rating ordinary={p[5]} collab={p[6]} />
+          <div className="person-bottom"><span>دنبال همنواز</span><button>پروفایل <ArrowLeft size={14} /></button></div>
+        </article>)}</div>
+      </div></section>
+
+      <section id="teachers" className="section wrap">
+        <Head label="آموزش" title={<>اساتید برتر و <em>آنلاین</em></>} text="کسی که مسیر را بلد است، باید راحت پیدا شود." />
+        <div className="teachers">{teachers.map(t => <article key={t[1]}><Avatar initials={t[0]} tone="violet" /><div><b>{t[1]}</b><span>{t[2]}</span><small>📍 {t[3]} · 🟢 آنلاین</small></div><strong>★ {t[4]}</strong></article>)}</div>
+      </section>
+
+      <section id="groups" className="section dark"><div className="wrap">
+        <Head label="درخواست‌های زنده" title={<>شاید همین حالا کسی <em>منتظر ساز توست.</em></>} />
+        <div className="requests">{requests.map(r => <article key={r[1]} className={r[3]}><Avatar initials={r[0]} tone={r[3]} /><div><h3>{r[1]}</h3><p>{r[2]}</p></div><button aria-label="دیدن درخواست"><ArrowLeft size={17} /></button></article>)}</div>
+      </div></section>
+
+      <section id="charity" className="charity wrap">
+        <div><small>موسیقی × انسانیت</small><h2>یک گروه شکل بگیرد،<br /><em>یک اجرای ماندگار.</em></h2><p>همنوازها می‌توانند کنار هم برای مؤسسات خیریه، سالمندان، بیماران و مراکز حمایتی اجرا کنند؛ موسیقی اینجا فقط شنیده نمی‌شود، اثر می‌گذارد.</p><a className="cta" href="#groups">گروه‌های در حال شکل‌گیری <ArrowLeft size={16} /></a></div>
+        <div className="heart-art"><Heart size={32} /><b>یک نت<br />یک گروه<br />یک اثر</b></div>
+      </section>
+
+      <section className="section wrap">
+        <Head label="اعتماد" title={<>دو امتیاز، دو <em>تجربه.</em></>} />
+        <div className="rating-cards">
+          <article><Star className="gold-icon" size={42} /><h3>امتیاز معمولی</h3><p>نظر و تجربه کاربران درباره پروفایل و حضور فرد در جامعه.</p></article>
+          <article><Star className="violet-icon" size={42} /><h3>امتیاز همکاری</h3><p>امتیازی که بعد از یک همکاری واقعی شکل می‌گیرد.</p></article>
+        </div>
+      </section>
+
+      <footer><div className="wrap footer-inner"><div className="brand"><span className="brand-icon"><Music2 /></span><span><b>همنواز</b><small>HAMNAVAZ</small></span></div><span>از یک نت شروع می‌شود.</span><nav><a href="#find">همنواز</a><a href="#groups">گروه‌ها</a><a href="#teachers">آموزش</a><a href="#charity">خیریه</a></nav></div></footer>
+      <nav className="bottom-nav" aria-label="ناوبری سریع"><a href="#find"><Search size={18}/><span>پیدا کن</span></a><a href="#people"><Users size={18}/><span>آدم‌ها</span></a><a href="#groups" className="bottom-main"><Music2 size={20}/><span>همنواز</span></a><a href="#teachers"><Star size={18}/><span>اساتید</span></a><a href="#charity"><Heart size={18}/><span>خیریه</span></a></nav>
+    </main>
+  );
+}
