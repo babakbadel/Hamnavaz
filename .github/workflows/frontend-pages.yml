@@ -24,27 +24,41 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout clean workspace
+        uses: actions/checkout@v4
+        with:
+          clean: true
+          fetch-depth: 1
 
-      - uses: actions/setup-node@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: ''
 
-      - uses: actions/configure-pages@v5
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies from scratch
+        run: npm install --no-audit --no-fund
 
-      - name: Build frontend
-        run: npm run build
+      - name: Build frontend from scratch
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+          BUILD_COMMIT: ${{ github.sha }}
+        run: |
+          rm -rf .next out
+          npm run build
 
-      - name: Verify static output
+      - name: Verify fresh static output
         run: |
           test -d out
           test -f out/index.html
-          echo "Static export verified"
+          test -d out/_next
+          echo "Fresh static export verified"
+          find out/_next -maxdepth 2 -type f | head -20
 
-      - name: Upload Pages artifact
+      - name: Upload fresh Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/out
@@ -56,6 +70,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy fresh Pages artifact
         id: deployment
         uses: actions/deploy-pages@v4
