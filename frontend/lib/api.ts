@@ -15,6 +15,7 @@ export async function searchMusicians(params: { q?: string; page?: number; limit
   const query = new URLSearchParams();
   query.set("page", String(params.page ?? 1));
   query.set("limit", String(params.limit ?? 20));
+  if (params.q?.trim()) query.set("q", params.q.trim());
   const res = await fetch(`${API_URL}/search/musicians?${query.toString()}`, { cache: "no-store" });
   if (!res.ok) throw new Error("جستجوی نوازنده‌ها ناموفق بود");
   return res.json() as Promise<{ total: number; page: number; limit: number; results: Musician[] }>;
