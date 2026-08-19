@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+
 const nextConfig = {
-  output: 'export',
+  ...(isGitHubPages ? { output: 'export' } : {}),
   trailingSlash: true,
-  basePath: process.env.GITHUB_ACTIONS ? '/Hamnavaz' : '',
+  ...(isGitHubPages ? { basePath: '/Hamnavaz' } : {}),
   images: {
     unoptimized: true,
   },
