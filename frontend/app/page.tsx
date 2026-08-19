@@ -13,6 +13,7 @@ const features = [
 export default function HomePage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [q, setQ] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => { setLoggedIn(Boolean(localStorage.getItem("hamnavaz_token"))); }, []);
 
@@ -24,11 +25,14 @@ export default function HomePage() {
 
   return <main>
     <nav className="nav container">
-      <Link className="brand" href="/"><span>♪</span> همنواز</Link>
-      <div className="nav-links">
-        <Link href="/musicians">کشف نوازنده‌ها</Link>
-        <a href="#how">چطور کار می‌کند؟</a>
-        {loggedIn ? <Link className="profile-nav" href="/dashboard">پروفایل من</Link> : <Link className="login" href="/auth/login">ورود</Link>}
+      <Link className="brand" href="/" onClick={() => setMenuOpen(false)}><span>♪</span> همنواز</Link>
+      <button className={`menu-toggle${menuOpen ? " is-open" : ""}`} type="button" aria-label="باز کردن منو" aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>
+        <span></span><span></span><span></span>
+      </button>
+      <div className={`nav-links${menuOpen ? " mobile-open" : ""}`}>
+        <Link href="/musicians" onClick={() => setMenuOpen(false)}>کشف نوازنده‌ها</Link>
+        <a href="#how" onClick={() => setMenuOpen(false)}>چطور کار می‌کند؟</a>
+        {loggedIn ? <Link className="profile-nav" href="/dashboard" onClick={() => setMenuOpen(false)}>پروفایل من</Link> : <Link className="login" href="/auth/login" onClick={() => setMenuOpen(false)}>ورود</Link>}
       </div>
     </nav>
 
