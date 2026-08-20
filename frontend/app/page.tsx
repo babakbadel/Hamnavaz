@@ -4,57 +4,93 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 
 const instruments = ["گیتار", "پیانو", "ویولن", "دف", "تار", "سه‌تار"];
-const features = [
-  { title: "پیدا کردن هم‌نواز", text: "نوازنده مناسب را بر اساس ساز، شهر و سبک موسیقی پیدا کن." },
-  { title: "پیدا کردن استاد", text: "برای یادگیری ساز، استاد و مسیر مناسب خودت را پیدا کن." },
-  { title: "همکاری موسیقی", text: "برای اجرا، تمرین، گروه و پروژه‌های موسیقی همکار پیدا کن." },
+const cities = ["تهران", "اصفهان", "شیراز", "مشهد", "تبریز"];
+const skills = ["مبتدی", "متوسط", "حرفه‌ای", "مدرس"];
+const styles = ["پاپ", "سنتی", "راک", "کلاسیک", "جاز"];
+
+const onlineMusicians = [
+  { name: "آرمان", instrument: "گیتار · پاپ", city: "تهران", avatar: "🎸" },
+  { name: "سارا", instrument: "پیانو · کلاسیک", city: "اصفهان", avatar: "🎹" },
+  { name: "امیر", instrument: "دف · سنتی", city: "شیراز", avatar: "🥁" },
+  { name: "نگار", instrument: "ویولن · پاپ", city: "تهران", avatar: "🎻" },
+];
+
+const teachers = [
+  { name: "استاد مهدی", instrument: "گیتار", level: "حرفه‌ای", avatar: "🎸" },
+  { name: "استاد نازنین", instrument: "پیانو", level: "مدرس", avatar: "🎹" },
+  { name: "استاد علی", instrument: "تار و سه‌تار", level: "مدرس", avatar: "🎵" },
+];
+
+const concerts = [
+  { title: "شب موسیقی همنواز", place: "تهران · تالار وحدت", date: "۲۸ شهریور", image: "🎤" },
+  { title: "آوای اصفهان", place: "اصفهان · سالن سیتی‌سنتر", date: "۴ مهر", image: "🎻" },
+  { title: "هم‌صدا", place: "شیراز · سالن حافظ", date: "۱۲ مهر", image: "🎸" },
 ];
 
 export default function HomePage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [q, setQ] = useState("");
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [city, setCity] = useState("");
+  const [instrument, setInstrument] = useState("");
+  const [skill, setSkill] = useState("");
+  const [style, setStyle] = useState("");
 
-  useEffect(() => { setLoggedIn(Boolean(localStorage.getItem("hamnavaz_token"))); }, []);
+  useEffect(() => setLoggedIn(Boolean(localStorage.getItem("hamnavaz_token"))), []);
 
   function discover(e: FormEvent) {
     e.preventDefault();
-    const term = q.trim();
-    window.location.href = term ? `/musicians?q=${encodeURIComponent(term)}` : "/musicians";
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q.trim());
+    if (city) params.set("city", city);
+    if (instrument) params.set("instrument", instrument);
+    if (skill) params.set("skill", skill);
+    if (style) params.set("style", style);
+    window.location.href = `/musicians?${params.toString()}`;
   }
 
-  return <main>
-    <nav className="nav container">
-      <Link className="brand" href="/" onClick={() => setMenuOpen(false)}><span>♪</span> همنواز</Link>
-      <button className={`menu-toggle${menuOpen ? " is-open" : ""}`} type="button" aria-label="باز کردن منو" aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>
-        <span></span><span></span><span></span>
-      </button>
-      <div className={`nav-links${menuOpen ? " mobile-open" : ""}`}>
-        <Link href="/musicians" onClick={() => setMenuOpen(false)}>کشف نوازنده‌ها</Link>
-        <a href="#how" onClick={() => setMenuOpen(false)}>چطور کار می‌کند؟</a>
-        {loggedIn ? <Link className="profile-nav" href="/dashboard" onClick={() => setMenuOpen(false)}>پروفایل من</Link> : <Link className="login" href="/auth/login" onClick={() => setMenuOpen(false)}>ورود</Link>}
-      </div>
-    </nav>
-
-    <section className="hero container">
+  return <main className="hz-home">
+    <section className="home-hero container">
       <div className="hero-copy">
-        <p className="eyebrow">موسیقی، وقتی بهتر می‌شود که تنها نباشد</p>
-        <h1>هم‌نواز خودت را<br/><span>پیدا کن.</span></h1>
-        <p className="lead">نوازنده، استاد، گروه یا فضای مناسب برای تمرین و اجرا را پیدا کن و موسیقی را با آدم‌های مناسب ادامه بده.</p>
-        <form className="search-box" id="discover" onSubmit={discover}>
-          <input value={q} onChange={e=>setQ(e.target.value)} aria-label="جستجوی نوازنده" placeholder="مثلاً گیتاریست در تهران..."/>
-          <button className="search-button" type="submit">جستجو</button>
+        <p className="eyebrow">جامعه‌ای برای آدم‌های موسیقی</p>
+        <h1>موسیقی وقتی بهتر می‌شود که <span>تنها نباشد.</span></h1>
+        <p className="lead">هم‌نواز، استاد، گروه و فرصت‌های اجرا را پیدا کن؛ از یک جستجوی ساده تا یک همکاری واقعی روی صحنه.</p>
+        <form className="discover-panel" onSubmit={discover}>
+          <div className="discover-title"><span>🔎</span><div><strong>هم‌نوازت را پیدا کن</strong><small>بر اساس شهر، ساز، مهارت و سبک</small></div></div>
+          <input value={q} onChange={e => setQ(e.target.value)} placeholder="نام نوازنده، ساز یا سبک..." aria-label="جستجو" />
+          <div className="filter-grid">
+            <select value={city} onChange={e => setCity(e.target.value)}><option value="">📍 همه شهرها</option>{cities.map(x => <option key={x}>{x}</option>)}</select>
+            <select value={instrument} onChange={e => setInstrument(e.target.value)}><option value="">🎸 همه سازها</option>{instruments.map(x => <option key={x}>{x}</option>)}</select>
+            <select value={skill} onChange={e => setSkill(e.target.value)}><option value="">⭐ همه مهارت‌ها</option>{skills.map(x => <option key={x}>{x}</option>)}</select>
+            <select value={style} onChange={e => setStyle(e.target.value)}><option value="">🎵 همه سبک‌ها</option>{styles.map(x => <option key={x}>{x}</option>)}</select>
+          </div>
+          <button className="primary-btn" type="submit">پیدا کن <span>←</span></button>
         </form>
-        <div className="quick-tags">{instruments.map(item => <Link href={`/musicians?q=${encodeURIComponent(item)}`} key={item}>{item}</Link>)}</div>
       </div>
-      <div className="hero-card">
-        <div className="music-orb">♫</div><p>جامعه موسیقی همنواز</p><strong>آدم مناسب برای موسیقی‌ات را پیدا کن</strong>
-        <div className="mini-profile"><span>🎸</span><div><b>هم‌نواز</b><small>تمرین · اجرا · گروه</small></div><i>فعال</i></div>
-        <div className="mini-profile"><span>🎓</span><div><b>استاد</b><small>یادگیری · کلاس · مشاوره</small></div><i>فعال</i></div>
-      </div>
+      <div className="hero-visual"><div className="hero-note">♫</div><strong>یک پیام می‌تواند شروع یک همکاری باشد.</strong><span>تمرین · هم‌نوازی · آموزش · اجرا</span></div>
     </section>
-    <section className="features container" id="how">{features.map((feature,index)=><article key={feature.title}><span>0{index+1}</span><h2>{feature.title}</h2><p>{feature.text}</p></article>)}</section>
-    <section className="cta container"><div><p className="eyebrow">شروع کن</p><h2>{loggedIn ? "به فضای شخصی همنواز خوش آمدی." : "موسیقی منتظر همنواز توست."}</h2></div><Link className="cta-button" href={loggedIn ? "/dashboard" : "/auth/register"}>{loggedIn ? "ورود به داشبورد" : "ساخت پروفایل موسیقی"}</Link></section>
-    <style jsx global>{`@media(max-width:800px){.nav{height:68px}.menu-toggle{display:flex;width:44px;height:44px;border:1px solid #263144;background:#101827;border-radius:12px;padding:9px;cursor:pointer;flex-direction:column;justify-content:center;gap:5px}.menu-toggle span{display:block;width:100%;height:2px;background:#f5f2ea;border-radius:99px;transition:.2s}.menu-toggle.is-open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.menu-toggle.is-open span:nth-child(2){opacity:0}.menu-toggle.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-links{display:none;position:absolute;top:68px;right:0;left:0;flex-direction:column;align-items:stretch;gap:6px;padding:12px;background:#0b1320;border:1px solid #263144;border-radius:0 0 18px 18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}.nav-links.mobile-open{display:flex}.nav-links a{padding:14px 16px;border-radius:10px}.nav-links a:hover{background:#101827}.nav-links .login,.nav-links .profile-nav{text-align:center;color:#070d18;background:#d9b45b;margin-top:4px}.hero{grid-template-columns:1fr;gap:25px;padding:55px 0}.hero-card{display:none}.features,.profile-grid,.dashboard-grid{grid-template-columns:1fr;padding-bottom:60px}.cta{flex-direction:column;align-items:flex-start}.container{width:min(100% - 28px,1120px)}h1{letter-spacing:-2px}.profile-hero{grid-template-columns:auto 1fr}.profile-hero .primary-action{grid-column:1/-1;width:100%}.avatar-large{width:84px;height:84px;font-size:40px}.profile-hero h1{font-size:34px}.search-box{flex-direction:column}.search-button{width:100%}.dashboard-head{align-items:flex-start}.dashboard-avatar{width:84px;height:84px;border-radius:22px;font-size:40px}.auth-card{padding:28px 22px}}`}</style>
+
+    <section className="section container"><SectionHead title="همین حالا آنلاین‌اند" text="اگر می‌خواهی همین امروز شروع کنی، از نوازنده‌هایی که آنلاین هستند پیدا کن." action="مشاهده همه" href="/musicians?online=true"/><div className="people-grid">{onlineMusicians.map(p => <article className="person-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>📍 {p.city}</small></div><b className="online-dot">● آنلاین</b></article>)}</div></section>
+
+    <section className="section section-soft"><div className="container"><SectionHead title="مدرسان" text="برای یادگیری سازت، مدرس مناسب را پیدا کن و مسیرت را جدی‌تر ادامه بده." action="همه مدرسان" href="/teachers"/><div className="people-grid">{teachers.map(p => <article className="teacher-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>سطح: {p.level}</small></div><Link href="/teachers">مشاهده</Link></article>)}</div></div></section>
+
+    <section className="section container"><SectionHead title="سازت را انتخاب کن" text="نوازنده‌ها و مدرس‌های ساز موردعلاقه‌ات را سریع‌تر پیدا کن."/><div className="instrument-grid">{instruments.map(x => <Link href={`/musicians?q=${encodeURIComponent(x)}`} key={x}><span>{instrumentIcon(x)}</span><b>{x}</b><small>پیدا کردن نوازنده</small></Link>)}</div></section>
+
+    <section className="charity-banner container"><div className="charity-avatar">❤️</div><div><p className="eyebrow">موسیقی برای یک لبخند</p><h2>اجراهای خیریه همنواز</h2><p>نوازندگان می‌توانند برای خانه‌های سالمندان، مراکز درمانی و مؤسسه‌های خیریه، اجراهای داوطلبانه برگزار کنند.</p></div><Link href="/charity" className="outline-btn">مشاهده اجراها</Link></section>
+
+    <section className="section section-story"><div className="container story-grid"><div><p className="eyebrow">داستان همنواز</p><h2>آدم‌های موسیقی<br/><span>نباید همدیگر را گم کنند.</span></h2><p>همنواز از یک ایده ساده شروع شد: ساختن جایی که نوازنده، استاد، گروه، برگزارکننده و دوست‌دار موسیقی بتوانند همدیگر را پیدا کنند و یک آشنایی را به یک همکاری واقعی تبدیل کنند.</p><Link href="/about" className="text-link">داستان همنواز را بخوان ←</Link></div><div className="story-card"><span>♪</span><strong>یک ساز</strong><i>+</i><strong>یک آدم</strong><i>=</i><strong>یک موسیقی</strong></div></div></section>
+
+    <section className="section container"><SectionHead title="صدای همنواز" text="موسیقی‌هایی که از همکاری اعضای همنواز متولد شده‌اند." action="همه موسیقی‌ها" href="/music"/><div className="music-grid">{["اولین تمرین", "کوچه‌های اصفهان", "با هم می‌نوازیم"].map((x,i) => <article className="music-card" key={x}><div className="cover">{["🎧","🎼","🎙️"][i]}</div><div><h3>{x}</h3><p>ساخته‌شده در یک همکاری همنوازی</p></div><button aria-label="پخش">▶</button></article>)}</div></section>
+
+    <section className="section section-soft"><div className="container"><SectionHead title="از آشنایی تا صحنه" text="همکاری‌هایی که در همنواز شروع شدند و به اجرای واقعی رسیدند." action="همه همکاری‌ها" href="/collaborations"/><div className="concert-grid">{concerts.map(c => <article className="concert-card" key={c.title}><div className="concert-cover">{c.image}<span>{c.date}</span></div><div className="concert-body"><h3>{c.title}</h3><p>{c.place}</p><Link href="/concerts">جزئیات اجرا ←</Link></div></article>)}</div></div></section>
+
+    <section className="section container"><SectionHead title="کنسرت‌ها و فروش بلیت" text="اجرای موردعلاقه‌ات را پیدا کن، صندلی‌ات را انتخاب کن و بلیت بخر." action="همه کنسرت‌ها" href="/concerts"/><div className="ticket-row">{concerts.map(c => <article className="ticket-card" key={c.title}><div><small>{c.date}</small><h3>{c.title}</h3><p>{c.place}</p></div><Link href="/concerts">خرید بلیت</Link></article>)}</div></section>
+
+    <section className="final-cta container"><div><p className="eyebrow">شروع همنوازی</p><h2>{loggedIn ? "آماده‌ای همکاری بعدی‌ات را شروع کنی؟" : "موسیقی منتظر همنواز توست."}</h2></div><Link href={loggedIn ? "/musicians" : "/auth/register"} className="primary-btn">{loggedIn ? "پیدا کردن همنواز" : "ساخت پروفایل موسیقی"}</Link></section>
   </main>;
 }
+
+function SectionHead({ title, text, action, href }: { title: string; text: string; action?: string; href?: string }) {
+  return <div className="section-head"><div><h2>{title}</h2><p>{text}</p></div>{action && href && <Link href={href}>{action} ←</Link>}</div>;
+}
+
+function instrumentIcon(name: string) { return ({"گیتار":"🎸","پیانو":"🎹","ویولن":"🎻","دف":"🥁","تار":"🪕","سه‌تار":"🎵"} as Record<string,string>)[name] || "🎵"; }
