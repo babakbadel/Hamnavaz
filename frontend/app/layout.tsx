@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import HamnavazNav from "./components/HamnavazNav";
 
 export const metadata: Metadata = {
   title: "همنواز | پیدا کردن هم‌نواز و موسیقی‌دان",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body>{children}</body>
+      <body>
+        <HamnavazNav />
+        {children}
+      </body>
     </html>
   );
 }
