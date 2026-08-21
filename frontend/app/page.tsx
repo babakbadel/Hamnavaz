@@ -52,8 +52,24 @@ export default function HomePage() {
     <style>{`
       .online-grid { display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; grid-auto-flow:row !important; grid-auto-columns:unset !important; overflow:visible !important; }
       .online-grid > * { min-width:0 !important; }
+      .person-card,.teacher-card,.music-card,.concert-card,.ticket-card,.instrument-grid a {
+        position:relative;
+        border:1px solid rgba(215,181,106,.48) !important;
+        box-shadow:0 0 0 1px rgba(215,181,106,.10),0 0 14px rgba(215,181,106,.16),0 10px 28px rgba(0,0,0,.28) !important;
+      }
+      .person-card:before,.teacher-card:before,.music-card:before,.concert-card:before,.ticket-card:before,.instrument-grid a:before {
+        content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+        box-shadow:inset 0 0 12px rgba(215,181,106,.08),0 0 8px rgba(215,181,106,.12);
+      }
+      .person-card:hover,.teacher-card:hover,.music-card:hover,.concert-card:hover,.ticket-card:hover,.instrument-grid a:hover {
+        border-color:#e7c978 !important;
+        box-shadow:0 0 0 1px rgba(231,201,120,.30),0 0 22px rgba(215,181,106,.34),0 16px 42px rgba(0,0,0,.34) !important;
+        transform:translateY(-3px);
+      }
+      .online-grid .person-card { box-shadow:0 0 0 1px rgba(215,181,106,.12),0 0 18px rgba(215,181,106,.22),0 10px 30px rgba(0,0,0,.3) !important; }
+      .online-grid .online-dot { text-shadow:0 0 8px rgba(143,208,159,.65); }
       @media (max-width:900px) { .online-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
-      @media (max-width:600px) { .online-grid { gap:10px !important; } .online-grid .person-card { padding:12px; gap:8px; min-height:86px; } .online-grid .person-card h3 { font-size:14px; } .online-grid .person-card p { font-size:10px; } .online-grid .person-card small { font-size:9px; } .online-grid .online-dot { font-size:8px; } .online-grid .avatar { width:46px; height:46px; font-size:22px; } }
+      @media (max-width:600px) { .online-grid { gap:10px !important; } .online-grid .person-card { padding:12px; gap:8px; min-height:86px; } .online-grid .person-card h3 { font-size:14px; } .online-grid .person-card p { font-size:10px; } .online-grid .person-card small { font-size:9px; } .online-grid .online-dot { font-size:8px; } .online-grid .avatar { width:46px; height:46px; font-size:22px; } .person-card,.teacher-card,.music-card,.concert-card,.ticket-card,.instrument-grid a { box-shadow:0 0 0 1px rgba(215,181,106,.10),0 0 12px rgba(215,181,106,.14),0 8px 22px rgba(0,0,0,.25) !important; } }
     `}</style>
     <section className="home-hero container">
       <div className="hero-copy">
