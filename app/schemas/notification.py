@@ -1,11 +1,19 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class NotificationCreate(BaseModel):
-    title: str
-    text: str
+    title: str = Field(min_length=1, max_length=255)
+    text: str = Field(min_length=1, max_length=500)
+
+    @field_validator("title", "text")
+    @classmethod
+    def normalize_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Notification text cannot be empty")
+        return value
 
 
 class NotificationResponse(BaseModel):
