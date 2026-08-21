@@ -6,6 +6,7 @@
     },
     "backend": {
       "root": ".",
+      "framework": "fastapi",
       "entrypoint": "backend.main:app"
     }
   },
