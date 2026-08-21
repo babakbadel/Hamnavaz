@@ -29,3 +29,21 @@ def test_public_api_openapi():
     assert response.status_code == 200
     payload = response.json()
     assert payload["info"]["title"] == "Hamnavaz API"
+
+
+def test_cors_allows_production_frontend():
+    response = client.options(
+        "/api/health",
+        headers={
+            "Origin": "https://hamnavaz.vercel.app",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "https://hamnavaz.vercel.app"
+
+
+def test_protected_endpoints_require_authentication():
+    assert client.get("/api/match/me").status_code in {401, 403}
+    assert client.get("/api/messages/").status_code in {401, 403}
+    assert client.get("/api/notifications/").status_code in {401, 403}
