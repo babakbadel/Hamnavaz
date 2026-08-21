@@ -1,6 +1,13 @@
 {
-  "framework": "nextjs",
-  "installCommand": "npm install",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next"
+  "experimentalServices": {
+    "web": {
+      "entrypoint": "frontend",
+      "routePrefix": "/"
+    },
+    "api": {
+      "entrypoint": "api/main.py",
+      "routePrefix": "/api",
+      "includeFiles": ["app/**", "api/**"]
+    }
+  }
 }
