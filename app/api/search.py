@@ -1,48 +1,37 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-
+from app.domains.locations.model import City
+from app.domains.music.instruments.model import Instrument, UserInstrument
 from app.domains.profiles.model import Profile
 from app.domains.users.model import User
-from app.domains.locations.model import City
-
-from app.domains.music.instruments.model import (
-    Instrument,
-    UserInstrument,
-)
 
 router = APIRouter(prefix="/search", tags=["Search"])
 
 
 @router.get("/musicians")
 def search_musicians(
-    q: str | None = None,
-    city_id: int | None = None,
-    instrument_id: str | None = None,
-    level: str | None = None,
-    page: int = 1,
-    limit: int = 10,
+    q: str | None = Query(default=None, max_length=100),
+    city_id: int | None = Query(default=None, ge=1),
+    instrument_id: str | None = Query(default=None, max_length=100),
+    level: str | None = Query(default=None, max_length=50),
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
     """Search active musician profiles with text, city, instrument, level and pagination."""
-    page = max(page, 1)
-    limit = min(max(limit, 1), 100)
-
     query = (
         db.query(Profile)
         .join(User, User.id == Profile.user_id)
         .filter(User.is_active.is_(True))
     )
 
-    # Text search is intentionally backend-side so the production UI and API
-    # use the same source of truth. It covers profile text, city and instrument.
     if q and q.strip():
         term = f"%{q.strip()}%"
         query = (
-            query
-            .outerjoin(UserInstrument, UserInstrument.user_id == Profile.user_id)
+            query.outerjoin(UserInstrument, UserInstrument.user_id == Profile.user_id)
             .outerjoin(Instrument, Instrument.id == UserInstrument.instrument_id)
             .filter(
                 or_(
@@ -59,10 +48,7 @@ def search_musicians(
         query = query.filter(Profile.city_id == city_id)
 
     if instrument_id is not None or level is not None:
-        query = query.join(
-            UserInstrument,
-            UserInstrument.user_id == Profile.user_id,
-        )
+        query = query.join(UserInstrument, UserInstrument.user_id == Profile.user_id)
 
     if instrument_id is not None:
         query = query.filter(UserInstrument.instrument_id == instrument_id)
@@ -74,12 +60,17 @@ def search_musicians(
     total = query.count()
     results = query.offset((page - 1) * limit).limit(limit).all()
 
+    city_ids = {p.city_id for p in results if p.city_id is not None}
+    cities = {}
+    if city_ids:
+        cities = {
+            city.id: city
+            for city in db.query(City).filter(City.id.in_(city_ids)).all()
+        }
+
     output = []
     for profile in results:
-        city = None
-        if profile.city_id is not None:
-            city = db.query(City).filter(City.id == profile.city_id).first()
-
+        city = cities.get(profile.city_id)
         output.append(
             {
                 "user_id": profile.user_id,
@@ -99,18 +90,24 @@ def search_musicians(
             }
         )
 
-    return {"total": total, "page": page, "limit": limit, "results": output}
+    return {
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit if total else 0,
+        "results": output,
+    }
 
 
 @router.get("/instruments")
 def search_instruments(
-    q: str | None = None,
-    family: str | None = None,
+    q: str | None = Query(default=None, max_length=100),
+    family: str | None = Query(default=None, max_length=100),
     db: Session = Depends(get_db),
 ):
     query = db.query(Instrument)
-    if q:
-        query = query.filter(Instrument.name.ilike(f"%{q}%"))
-    if family:
-        query = query.filter(Instrument.family == family)
+    if q and q.strip():
+        query = query.filter(Instrument.name.ilike(f"%{q.strip()}%"))
+    if family and family.strip():
+        query = query.filter(Instrument.family == family.strip())
     return query.order_by(Instrument.name).all()
