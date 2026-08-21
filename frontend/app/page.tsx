@@ -49,6 +49,12 @@ export default function HomePage() {
   }
 
   return <main className="hz-home">
+    <style>{`
+      .online-grid { display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; grid-auto-flow:row !important; grid-auto-columns:unset !important; overflow:visible !important; }
+      .online-grid > * { min-width:0 !important; }
+      @media (max-width:900px) { .online-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
+      @media (max-width:600px) { .online-grid { gap:10px !important; } .online-grid .person-card { padding:12px; gap:8px; min-height:86px; } .online-grid .person-card h3 { font-size:14px; } .online-grid .person-card p { font-size:10px; } .online-grid .person-card small { font-size:9px; } .online-grid .online-dot { font-size:8px; } .online-grid .avatar { width:46px; height:46px; font-size:22px; } }
+    `}</style>
     <section className="home-hero container">
       <div className="hero-copy">
         <p className="eyebrow">جامعه‌ای برای آدم‌های موسیقی</p>
@@ -69,7 +75,7 @@ export default function HomePage() {
       <div className="hero-visual"><div className="hero-note">♫</div><strong>یک پیام می‌تواند شروع یک همکاری باشد.</strong><span>تمرین · هم‌نوازی · آموزش · اجرا</span></div>
     </section>
 
-    <section className="section container"><SectionHead title="همین حالا آنلاین‌اند" text="اگر می‌خواهی همین امروز شروع کنی، از نوازنده‌هایی که آنلاین هستند پیدا کن." action="مشاهده همه" href="/musicians?online=true"/><div className="people-grid">{onlineMusicians.map(p => <article className="person-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>📍 {p.city}</small></div><b className="online-dot">● آنلاین</b></article>)}</div></section>
+    <section className="section container"><SectionHead title="همین حالا آنلاین‌اند" text="اگر می‌خواهی همین امروز شروع کنی، از نوازنده‌هایی که آنلاین هستند پیدا کن." action="مشاهده همه" href="/musicians?online=true"/><div className="people-grid online-grid">{onlineMusicians.map(p => <article className="person-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>📍 {p.city}</small></div><b className="online-dot">● آنلاین</b></article>)}</div></section>
 
     <section className="section section-soft"><div className="container"><SectionHead title="مدرسان" text="برای یادگیری سازت، مدرس مناسب را پیدا کن و مسیرت را جدی‌تر ادامه بده." action="همه مدرسان" href="/teachers"/><div className="people-grid">{teachers.map(p => <article className="teacher-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>سطح: {p.level}</small></div><Link href="/teachers">مشاهده</Link></article>)}</div></div></section>
 
