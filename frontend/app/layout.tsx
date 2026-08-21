@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./home-neon.css";
+import "./neon-override.css";
 import HamnavazNav from "./components/HamnavazNav";
 
 export const metadata: Metadata = {
