@@ -5,14 +5,14 @@
       "root": "frontend/"
     },
     "backend": {
-      "root": "backend/",
-      "entrypoint": "main:app"
+      "root": ".",
+      "entrypoint": "backend.main:app"
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": { "service": "backend" }
+      "destination": { "service": "backend", "path": "/$1" }
     },
     {
       "source": "/(.*)",
