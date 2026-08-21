@@ -33,6 +33,13 @@ Premium Dark RTL music platform. Neon purple animated/glowing borders are requir
 ### Graphy / Headroom
 Treat Graphy-style graph thinking and Headroom-style development/logging discipline as project-wide process requirements. Keep decisions, blockers, fixes, commits and verification results traceable. This repository log is the canonical lightweight record.
 
+### 2026-08-21 — Engineering hardening pass
+- Pinned frontend dependencies to stable versions instead of `latest` to make builds reproducible.
+- Current pinned frontend versions: Next.js 16.3.1 and React 19.2.1.
+- Added a GitHub Actions frontend CI workflow for TypeScript checking and production build verification.
+- CI uses Node 22 and runs on frontend changes and pull requests.
+- This follows the Vercel React best-practices emphasis on predictable builds, performance, and verification.
+
 ### Next sequence
 1. Fix and verify Vercel API routing.
 2. Verify musician search against the real backend.
