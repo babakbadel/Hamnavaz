@@ -8,11 +8,7 @@ from app.domains.profiles.model import Profile
 from app.domains.users.model import User
 from app.schemas.rating import RatingCreate, RatingResponse
 
-
-router = APIRouter(
-    prefix="/ratings",
-    tags=["Ratings"],
-)
+router = APIRouter(prefix="/ratings", tags=["Ratings"])
 
 
 def get_db():
@@ -29,59 +25,35 @@ def create_rating(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # --------------------------------------------------------
-    # 1. Target profile must exist
-    # --------------------------------------------------------
-    profile = (
-        db.query(Profile)
-        .filter(Profile.id == data.profile_id)
-        .first()
-    )
-
+    profile = db.query(Profile).filter(Profile.id == data.profile_id).first()
     if profile is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Profile not found",
-        )
-
-    # --------------------------------------------------------
-    # 2. User cannot rate their own profile
-    # --------------------------------------------------------
+        raise HTTPException(status_code=404, detail="Profile not found")
     if profile.user_id == current_user.id:
-        raise HTTPException(
-            status_code=400,
-            detail="You cannot rate your own profile",
-        )
+        raise HTTPException(status_code=400, detail="You cannot rate your own profile")
 
-    # --------------------------------------------------------
-    # 3. A user can rate a profile only once
-    # --------------------------------------------------------
     existing = (
         db.query(Rating)
-        .filter(
-            Rating.user_id == current_user.id,
-            Rating.profile_id == profile.id,
-        )
+        .filter(Rating.user_id == current_user.id, Rating.profile_id == profile.id)
         .first()
     )
-
     if existing is not None:
-        raise HTTPException(
-            status_code=400,
-            detail="You have already rated this profile",
-        )
+        raise HTTPException(status_code=409, detail="You have already rated this profile")
 
-    # --------------------------------------------------------
-    # 4. Create rating
-    # --------------------------------------------------------
-    rating = Rating(
-        profile_id=profile.id,
-        user_id=current_user.id,
-        score=data.score,
-    )
-
+    rating = Rating(profile_id=profile.id, user_id=current_user.id, score=data.score)
     db.add(rating)
     db.commit()
     db.refresh(rating)
-
     return rating
+
+
+@router.get("/profile/{profile_id}", response_model=list[RatingResponse])
+def profile_ratings(
+    profile_id: str,
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(Rating)
+        .filter(Rating.profile_id == profile_id)
+        .order_by(Rating.id.desc())
+        .all()
+    )
