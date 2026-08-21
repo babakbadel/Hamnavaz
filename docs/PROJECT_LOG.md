@@ -36,9 +36,11 @@ Treat Graphy-style graph thinking and Headroom-style development/logging discipl
 ### 2026-08-21 — Engineering hardening pass
 - Pinned frontend dependencies to stable versions instead of `latest` to make builds reproducible.
 - Current pinned frontend versions: Next.js 16.3.1 and React 19.2.1.
-- Added a GitHub Actions frontend CI workflow for TypeScript checking and production build verification.
+- Added GitHub Actions frontend CI for TypeScript checking and production build verification.
 - CI uses Node 22 and runs on frontend changes and pull requests.
-- This follows the Vercel React best-practices emphasis on predictable builds, performance, and verification.
+- Added production smoke checks for `/api/health` and `/api/docs`.
+- Added scheduled/manual Production Smoke workflow so the API regression remains observable instead of relying on chat memory.
+- The smoke test is intentionally strict: a 404 is a deployment/routing failure, not a success.
 
 ### Next sequence
 1. Fix and verify Vercel API routing.
