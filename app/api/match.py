@@ -1,70 +1,39 @@
-from fastapi import APIRouter, Depends, HTTPException
+from __future__ import annotations
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from app.auth.dependencies import get_current_user
 from app.database.session import get_db
+from app.domains.music.instruments.model import UserInstrument
 from app.domains.profiles.model import Profile
 from app.domains.users.model import User
-from app.domains.music.instruments.model import (
-    UserInstrument,
-)
-from app.auth.dependencies import get_current_user
+
+router = APIRouter(prefix="/match", tags=["Match"])
 
 
-router = APIRouter(
-    prefix="/match",
-    tags=["Match"],
-)
-
-
-def calculate_score(
-    source_profile: Profile,
-    source_instruments,
-    target_profile: Profile,
-    target_instruments,
-):
+def calculate_score(source_profile, source_instruments, target_profile, target_instruments):
     score = 0
-    reasons = []
+    reasons: list[str] = []
 
-    if (
-        source_profile.city
-        and target_profile.city
-        and source_profile.city == target_profile.city
-    ):
+    if source_profile.city and target_profile.city and source_profile.city == target_profile.city:
         score += 30
         reasons.append("same city")
 
-    source_ids = {
-        item.instrument_id
-        for item in source_instruments
-    }
-
-    target_ids = {
-        item.instrument_id
-        for item in target_instruments
-    }
-
-    if source_ids.intersection(target_ids):
+    source_ids = {item.instrument_id for item in source_instruments}
+    target_ids = {item.instrument_id for item in target_instruments}
+    if source_ids & target_ids:
         score += 30
         reasons.append("same instrument")
 
-    source_levels = {
-        item.level
-        for item in source_instruments
-    }
-
-    target_levels = {
-        item.level
-        for item in target_instruments
-    }
-
-    if source_levels.intersection(target_levels):
+    source_levels = {item.level for item in source_instruments if item.level}
+    target_levels = {item.level for item in target_instruments if item.level}
+    if source_levels & target_levels:
         score += 10
         reasons.append("similar skill level")
 
-    if any(
-        item.is_primary
-        for item in target_instruments
-    ):
+    if any(item.is_primary for item in target_instruments):
         score += 10
         reasons.append("has primary instrument")
 
@@ -72,80 +41,62 @@ def calculate_score(
         score += 20
         reasons.append("verified profile")
 
-    return score, reasons
+    return min(score, 100), reasons
+
+
+def _profile_instruments(db: Session, user_ids: list[int]) -> dict[int, list[UserInstrument]]:
+    if not user_ids:
+        return {}
+    rows = (
+        db.query(UserInstrument)
+        .filter(UserInstrument.user_id.in_(user_ids))
+        .all()
+    )
+    grouped: dict[int, list[UserInstrument]] = {}
+    for row in rows:
+        grouped.setdefault(row.user_id, []).append(row)
+    return grouped
+
+
+def _result(profile, score, reasons):
+    return {
+        "user_id": profile.user_id,
+        "profile_id": str(profile.id),
+        "display_name": profile.display_name,
+        "city": profile.city,
+        "match_score": score,
+        "reasons": reasons,
+    }
 
 
 @router.get("/me")
 def get_my_matches(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    limit: int = Query(default=20, ge=1, le=100),
+    min_score: int = Query(default=0, ge=0, le=100),
 ):
-    source_profile = (
-        db.query(Profile)
-        .filter(Profile.user_id == current_user.id)
-        .first()
-    )
-
+    source_profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
     if source_profile is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Profile not found",
-        )
-
-    source_instruments = (
-        db.query(UserInstrument)
-        .filter(
-            UserInstrument.user_id == current_user.id
-        )
-        .all()
-    )
+        raise HTTPException(status_code=404, detail="Profile not found")
 
     profiles = (
         db.query(Profile)
         .join(User, User.id == Profile.user_id)
-        .filter(
-            Profile.user_id != current_user.id,
-            User.is_active == True,
-        )
+        .filter(Profile.user_id != current_user.id, User.is_active.is_(True))
         .all()
     )
+    instruments = _profile_instruments(db, [current_user.id, *[p.user_id for p in profiles]])
+    source_instruments = instruments.get(current_user.id, [])
 
     results = []
+    for target in profiles:
+        score, reasons = calculate_score(source_profile, source_instruments, target, instruments.get(target.user_id, []))
+        if score >= min_score:
+            results.append(_result(target, score, reasons))
 
-    for target_profile in profiles:
-        target_instruments = (
-            db.query(UserInstrument)
-            .filter(
-                UserInstrument.user_id
-                == target_profile.user_id
-            )
-            .all()
-        )
-
-        score, reasons = calculate_score(
-            source_profile,
-            source_instruments,
-            target_profile,
-            target_instruments,
-        )
-
-        results.append(
-            {
-                "user_id": target_profile.user_id,
-                "profile_id": str(target_profile.id),
-                "display_name": target_profile.display_name,
-                "city": target_profile.city,
-                "match_score": score,
-                "reasons": reasons,
-            }
-        )
-
-    results.sort(
-        key=lambda item: item["match_score"],
-        reverse=True,
-    )
-
-    return results
+    results.sort(key=lambda item: (-item["match_score"], item["display_name"] or ""))
+    return results[:limit]
 
 
 @router.get("/{user_id}")
@@ -154,58 +105,21 @@ def get_match_for_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    source_profile = (
-        db.query(Profile)
-        .filter(Profile.user_id == current_user.id)
-        .first()
-    )
+    if user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot calculate a match with yourself")
 
-    target_profile = (
-        db.query(Profile)
-        .filter(Profile.user_id == user_id)
-        .first()
-    )
-
+    source_profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+    target_profile = db.query(Profile).filter(Profile.user_id == user_id).first()
     if source_profile is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Your profile not found",
-        )
-
+        raise HTTPException(status_code=404, detail="Your profile not found")
     if target_profile is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Target profile not found",
-        )
+        raise HTTPException(status_code=404, detail="Target profile not found")
 
-    source_instruments = (
-        db.query(UserInstrument)
-        .filter(
-            UserInstrument.user_id == current_user.id
-        )
-        .all()
-    )
-
-    target_instruments = (
-        db.query(UserInstrument)
-        .filter(
-            UserInstrument.user_id == user_id
-        )
-        .all()
-    )
-
+    instruments = _profile_instruments(db, [current_user.id, user_id])
     score, reasons = calculate_score(
         source_profile,
-        source_instruments,
+        instruments.get(current_user.id, []),
         target_profile,
-        target_instruments,
+        instruments.get(user_id, []),
     )
-
-    return {
-        "user_id": target_profile.user_id,
-        "profile_id": str(target_profile.id),
-        "display_name": target_profile.display_name,
-        "city": target_profile.city,
-        "match_score": score,
-        "reasons": reasons,
-    }
+    return _result(target_profile, score, reasons)
