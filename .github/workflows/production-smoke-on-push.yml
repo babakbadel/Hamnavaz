@@ -1,0 +1,22 @@
+name: Production Smoke On Push
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Wait briefly for Vercel deployment propagation
+        run: sleep 30
+      - name: Run production smoke checks
+        env:
+          HAMNAVAZ_BASE_URL: https://hamnavaz.vercel.app
+        run: bash scripts/production-smoke.sh
