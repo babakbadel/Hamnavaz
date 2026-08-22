@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { searchMusicians, type Musician } from "../../lib/api";
+import { searchMusicians, type Musician } from "../lib/api";
 
 const instruments = ["گیتار", "پیانو", "ویولن", "دف", "تار", "سه‌تار"];
 const cities = ["تهران", "اصفهان", "شیراز", "مشهد", "تبریز"];
