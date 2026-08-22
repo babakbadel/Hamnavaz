@@ -32,69 +32,33 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export type AuthResponse = { access_token: string; token_type: string };
-
-export type Musician = {
-  id: string;
-  user_id: number;
-  display_name: string;
-  city_name?: string | null;
-  city?: string | null;
-  bio?: string | null;
-  avatar_url?: string | null;
-  is_verified?: boolean;
-  is_online?: boolean;
-  last_seen_at?: string | null;
-};
-
-export type MusicianSearchParams = {
-  q?: string;
-  page?: number;
-  limit?: number;
-  city_id?: number;
-  city?: string;
-  instrument_id?: string;
-  instrument?: string;
-  level?: string;
-  skill?: string;
-  style?: string;
-  online?: boolean;
-};
-
+export type Musician = { id: string; user_id: number; display_name: string; city_name?: string | null; city?: string | null; bio?: string | null; avatar_url?: string | null; is_verified?: boolean; is_online?: boolean; last_seen_at?: string | null };
+export type MusicianSearchParams = { q?: string; page?: number; limit?: number; city_id?: number; city?: string; instrument_id?: string; instrument?: string; level?: string; skill?: string; style?: string; online?: boolean };
 export type MatchResult = { user_id: number; profile_id: string; display_name: string; city?: string; match_score: number; reasons: string[] };
 export type Notification = { id: number; user_id: number; title: string; text: string; is_read: boolean; created_at: string };
 export type Message = { id: string; sender_profile_id: string; receiver_profile_id: string; text: string; is_read: boolean; created_at?: string };
+export type CollaborationRequest = { id: string; from_profile_id: string; to_profile_id: string; message?: string | null; status: string; created_at?: string };
 
-export async function login(email: string, password: string): Promise<AuthResponse> {
-  return request<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
-}
-
-export async function register(username: string, email: string, password: string) {
-  return request<{ id: number; username: string; email: string }>("/auth/register", { method: "POST", body: JSON.stringify({ username, email, password }) });
-}
+export async function login(email: string, password: string): Promise<AuthResponse> { return request<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }); }
+export async function register(username: string, email: string, password: string) { return request<{ id: number; username: string; email: string }>("/auth/register", { method: "POST", body: JSON.stringify({ username, email, password }) }); }
 
 export async function searchMusicians(params: MusicianSearchParams = {}) {
   const query = new URLSearchParams();
-  query.set("page", String(params.page ?? 1));
-  query.set("limit", String(params.limit ?? 20));
-  if (params.q?.trim()) query.set("q", params.q.trim());
-  if (params.city_id != null) query.set("city_id", String(params.city_id));
-  if (params.city?.trim()) query.set("city", params.city.trim());
-  if (params.instrument_id) query.set("instrument_id", params.instrument_id);
-  if (params.instrument?.trim()) query.set("instrument", params.instrument.trim());
-  if (params.level) query.set("level", params.level);
-  if (params.skill?.trim()) query.set("skill", params.skill.trim());
-  if (params.style?.trim()) query.set("style", params.style.trim());
-  if (params.online) query.set("online", "true");
+  query.set("page", String(params.page ?? 1)); query.set("limit", String(params.limit ?? 20));
+  if (params.q?.trim()) query.set("q", params.q.trim()); if (params.city_id != null) query.set("city_id", String(params.city_id));
+  if (params.city?.trim()) query.set("city", params.city.trim()); if (params.instrument_id) query.set("instrument_id", params.instrument_id);
+  if (params.instrument?.trim()) query.set("instrument", params.instrument.trim()); if (params.level) query.set("level", params.level);
+  if (params.skill?.trim()) query.set("skill", params.skill.trim()); if (params.style?.trim()) query.set("style", params.style.trim()); if (params.online) query.set("online", "true");
   return request<{ total: number; page: number; limit: number; pages: number; results: Musician[] }>(`/search/musicians?${query.toString()}`);
 }
 
-export async function getMusician(id: string) {
-  return request<{ user?: Record<string, unknown>; profile: Musician; instruments: Array<Record<string, unknown>> }>(`/musician/${encodeURIComponent(id)}`);
-}
-
+export async function getMusician(id: string) { return request<{ user?: Record<string, unknown>; profile: Musician; instruments: Array<Record<string, unknown>> }>(`/musician/${encodeURIComponent(id)}`); }
 export const getMyMatches = (limit = 20, minScore = 0) => request<MatchResult[]>(`/match/me?limit=${limit}&min_score=${minScore}`);
-export const sendCollaboration = (profileId: string, message?: string) => request(`/collaboration-request/`, { method: "POST", body: JSON.stringify({ profile_id: profileId, message }) });
-export const sendMessage = (receiverProfileId: string, text: string) => request(`/messages/`, { method: "POST", body: JSON.stringify({ receiver_profile_id: receiverProfileId, text }) });
+export const sendCollaboration = (profileId: string, message?: string) => request<CollaborationRequest>(`/collaboration-request/`, { method: "POST", body: JSON.stringify({ profile_id: profileId, message }) });
+export const getCollaborationInbox = () => request<CollaborationRequest[]>("/collaboration-request/inbox");
+export const acceptCollaboration = (id: string) => request<{ id: string; status: string }>(`/collaboration-request/${encodeURIComponent(id)}/accept`, { method: "PUT" });
+export const rejectCollaboration = (id: string) => request<{ id: string; status: string }>(`/collaboration-request/${encodeURIComponent(id)}/reject`, { method: "PUT" });
+export const sendMessage = (receiverProfileId: string, text: string) => request<Message>(`/messages/`, { method: "POST", body: JSON.stringify({ receiver_profile_id: receiverProfileId, text }) });
 export const getNotifications = () => request<Notification[]>("/notifications/");
 export const markNotificationRead = (id: number) => request(`/notifications/${id}/read`, { method: "PUT" });
 export const getMessages = () => request<Message[]>("/messages/");
