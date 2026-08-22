@@ -7,18 +7,37 @@ export class ApiError extends Error {
   }
 }
 
+function authHeaders(init?: RequestInit): Headers {
+  const headers = new Headers(init?.headers);
+  headers.set("Accept", "application/json");
+  if (init?.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("hamnavaz_token");
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  return headers;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    headers: {
-      Accept: "application/json",
-      ...(init?.headers || {}),
-    },
+    headers: authHeaders(init),
     cache: "no-store",
   });
+
   if (!res.ok) {
-    throw new ApiError(res.status === 404 ? "منبع پیدا نشد" : "ارتباط با سرویس همنواز ناموفق بود", res.status);
+    let detail = "ارتباط با سرویس همنواز ناموفق بود";
+    try {
+      const body = await res.json();
+      if (typeof body?.detail === "string") detail = body.detail;
+    } catch {
+      // Keep the stable fallback error message when the response is not JSON.
+    }
+    throw new ApiError(detail, res.status);
   }
+
   return res.json() as Promise<T>;
 }
 
@@ -32,6 +51,7 @@ export type Musician = {
   avatar_url?: string | null;
   is_verified?: boolean;
   is_online?: boolean;
+  last_seen_at?: string | null;
 };
 
 export type MusicianSearchParams = {
@@ -44,6 +64,33 @@ export type MusicianSearchParams = {
   online?: boolean;
 };
 
+export type MatchResult = {
+  user_id: number;
+  profile_id: string;
+  display_name: string;
+  city?: string;
+  match_score: number;
+  reasons: string[];
+};
+
+export type Notification = {
+  id: number;
+  user_id: number;
+  title: string;
+  text: string;
+  is_read: boolean;
+  created_at: string;
+};
+
+export type Message = {
+  id: string;
+  sender_profile_id: string;
+  receiver_profile_id: string;
+  text: string;
+  is_read: boolean;
+  created_at?: string;
+};
+
 export async function searchMusicians(params: MusicianSearchParams = {}) {
   const query = new URLSearchParams();
   query.set("page", String(params.page ?? 1));
@@ -53,6 +100,7 @@ export async function searchMusicians(params: MusicianSearchParams = {}) {
   if (params.instrument_id) query.set("instrument_id", params.instrument_id);
   if (params.level) query.set("level", params.level);
   if (params.online) query.set("online", "true");
+
   return request<{
     total: number;
     page: number;
@@ -69,3 +117,25 @@ export async function getMusician(id: string) {
     instruments: Array<Record<string, unknown>>;
   }>(`/musician/${encodeURIComponent(id)}`);
 }
+
+export const getMyMatches = (limit = 20, minScore = 0) =>
+  request<MatchResult[]>(`/match/me?limit=${limit}&min_score=${minScore}`);
+
+export const sendCollaboration = (profileId: string, message?: string) =>
+  request(`/collaboration-request/`, {
+    method: "POST",
+    body: JSON.stringify({ profile_id: profileId, message }),
+  });
+
+export const sendMessage = (receiverProfileId: string, text: string) =>
+  request(`/messages/`, {
+    method: "POST",
+    body: JSON.stringify({ receiver_profile_id: receiverProfileId, text }),
+  });
+
+export const getNotifications = () => request<Notification[]>("/notifications/");
+export const markNotificationRead = (id: number) => request(`/notifications/${id}/read`, { method: "PUT" });
+export const getMessages = () => request<Message[]>("/messages/");
+export const getFavorites = () => request<unknown[]>("/favorites/");
+export const deleteFavorite = (profileId: string) => request(`/favorites/${encodeURIComponent(profileId)}`, { method: "DELETE" });
+export const getRatings = (profileId: string) => request<unknown[]>(`/ratings/profile/${encodeURIComponent(profileId)}`);
