@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -17,11 +19,12 @@ def search_musicians(
     city_id: int | None = Query(default=None, ge=1),
     instrument_id: str | None = Query(default=None, max_length=100),
     level: str | None = Query(default=None, max_length=50),
+    online: bool = Query(default=False),
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """Search active musician profiles with text, city, instrument, level and pagination."""
+    """Search active musician profiles with text, city, instrument, level, presence and pagination."""
     query = (
         db.query(Profile)
         .join(User, User.id == Profile.user_id)
@@ -56,6 +59,10 @@ def search_musicians(
     if level is not None:
         query = query.filter(UserInstrument.level == level)
 
+    online_cutoff = datetime.now(timezone.utc) - timedelta(minutes=5)
+    if online:
+        query = query.filter(User.last_seen_at >= online_cutoff)
+
     query = query.distinct()
     total = query.count()
     results = query.offset((page - 1) * limit).limit(limit).all()
@@ -63,14 +70,12 @@ def search_musicians(
     city_ids = {p.city_id for p in results if p.city_id is not None}
     cities = {}
     if city_ids:
-        cities = {
-            city.id: city
-            for city in db.query(City).filter(City.id.in_(city_ids)).all()
-        }
+        cities = {city.id: city for city in db.query(City).filter(City.id.in_(city_ids)).all()}
 
     output = []
     for profile in results:
         city = cities.get(profile.city_id)
+        is_online = bool(profile.user.last_seen_at and profile.user.last_seen_at >= online_cutoff)
         output.append(
             {
                 "user_id": profile.user_id,
@@ -81,6 +86,8 @@ def search_musicians(
                 "city_name": city.name if city else profile.city,
                 "city_slug": city.slug if city else None,
                 "is_verified": profile.is_verified,
+                "is_online": is_online,
+                "last_seen_at": profile.user.last_seen_at,
                 "updated_at": profile.updated_at,
                 "bio": profile.bio,
                 "id": str(profile.id),
