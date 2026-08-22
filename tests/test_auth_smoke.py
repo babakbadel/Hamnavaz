@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.main import api_app
 
 
 def _register_and_login(client: TestClient) -> dict:
@@ -42,12 +42,12 @@ def _register_and_login(client: TestClient) -> dict:
 
 
 def test_register_and_login_smoke():
-    with TestClient(app) as client:
+    with TestClient(api_app) as client:
         _register_and_login(client)
 
 
 def test_authenticated_profile_flow():
-    with TestClient(app) as client:
+    with TestClient(api_app) as client:
         token = _register_and_login(client)
         headers = {"Authorization": f"Bearer {token['access_token']}"}
 
@@ -71,14 +71,14 @@ def test_authenticated_profile_flow():
 
 
 def test_protected_profile_requires_authentication():
-    with TestClient(app) as client:
+    with TestClient(api_app) as client:
         response = client.get("/musician/me")
 
     assert response.status_code == 401
 
 
 def test_login_rejects_invalid_credentials():
-    with TestClient(app) as client:
+    with TestClient(api_app) as client:
         response = client.post(
             "/auth/login",
             json={
