@@ -20,6 +20,15 @@ api_app = FastAPI(
     lifespan=lifespan,
 )
 
+
+@api_app.middleware("http")
+async def normalize_api_prefix(request, call_next):
+    """Allow the API service to work both mounted at /api and standalone on Vercel."""
+    if request.scope["path"] == "/api" or request.scope["path"].startswith("/api/"):
+        request.scope["path"] = request.scope["path"][4:] or "/"
+    return await call_next(request)
+
+
 register_routers(api_app)
 
 
