@@ -12,7 +12,6 @@ from app.domains.users.model import User
 
 router = APIRouter(prefix="/search", tags=["Search"])
 
-
 LEVEL_ALIASES = {
     "مبتدی": "beginner",
     "متوسط": "intermediate",
@@ -44,11 +43,17 @@ def search_musicians(
         .filter(User.is_active.is_(True))
     )
 
-    # Accept both canonical IDs and the Persian labels used by the public UI.
     if city_id is None and city and city.strip():
         city_ref = (
             db.query(City)
-            .filter(City.is_active.is_(True), or_(City.name == city.strip(), City.api_value == city.strip(), City.slug == city.strip()))
+            .filter(
+                City.is_active.is_(True),
+                or_(
+                    City.name == city.strip(),
+                    City.api_value == city.strip(),
+                    City.slug == city.strip(),
+                ),
+            )
             .first()
         )
         if city_ref:
@@ -71,30 +76,27 @@ def search_musicians(
 
     resolved_level = level or (LEVEL_ALIASES.get(skill.strip()) if skill and skill.strip() else None)
 
-    # Keep style backward-compatible: there is no normalized style field yet,
-    # so include it in the existing text search instead of silently ignoring it.
     terms = [value.strip() for value in (q, style) if value and value.strip()]
-    if terms:
-        query = (
-            query.outerjoin(UserInstrument, UserInstrument.user_id == Profile.user_id)
-            .outerjoin(Instrument, Instrument.id == UserInstrument.instrument_id)
-            .filter(
-                or_(*[
-                    clause
-                    for term in terms
-                    for clause in (
-                        Profile.display_name.ilike(f"%{term}%"),
-                        Profile.bio.ilike(f"%{term}%"),
-                        Profile.city.ilike(f"%{term}%"),
-                        Instrument.name.ilike(f"%{term}%"),
-                        Instrument.family.ilike(f"%{term}%"),
-                    )
-                ])
-            )
-        )
+    needs_instrument_join = resolved_instrument_id is not None or resolved_level is not None or bool(terms)
 
-    if resolved_instrument_id is not None or resolved_level is not None:
-        query = query.join(UserInstrument, UserInstrument.user_id == Profile.user_id)
+    if needs_instrument_join:
+        query = query.outerjoin(UserInstrument, UserInstrument.user_id == Profile.user_id)
+        query = query.outerjoin(Instrument, Instrument.id == UserInstrument.instrument_id)
+
+    if terms:
+        query = query.filter(
+            or_(*[
+                clause
+                for term in terms
+                for clause in (
+                    Profile.display_name.ilike(f"%{term}%"),
+                    Profile.bio.ilike(f"%{term}%"),
+                    Profile.city.ilike(f"%{term}%"),
+                    Instrument.name.ilike(f"%{term}%"),
+                    Instrument.family.ilike(f"%{term}%"),
+                )
+            ])
+        )
 
     if resolved_instrument_id is not None:
         query = query.filter(UserInstrument.instrument_id == resolved_instrument_id)
