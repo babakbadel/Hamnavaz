@@ -4,12 +4,17 @@
     "frontend": {
       "root": "frontend/",
       "framework": "nextjs"
+    },
+    "backend": {
+      "root": ".",
+      "entrypoint": "app.main:app",
+      "framework": "fastapi"
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.py"
+      "destination": { "service": "backend" }
     },
     {
       "source": "/(.*)",
