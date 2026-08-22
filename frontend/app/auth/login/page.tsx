@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ApiError, login } from "../../../lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +19,7 @@ export default function LoginPage() {
     try {
       const data = await login(email.trim(), password);
       localStorage.setItem("hamnavaz_token", data.access_token);
-      const next = searchParams.get("next");
+      const next = new URLSearchParams(window.location.search).get("next");
       router.replace(next?.startsWith("/") ? next : "/dashboard");
       router.refresh();
     } catch (err) {
