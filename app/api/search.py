@@ -13,51 +13,94 @@ from app.domains.users.model import User
 router = APIRouter(prefix="/search", tags=["Search"])
 
 
+LEVEL_ALIASES = {
+    "مبتدی": "beginner",
+    "متوسط": "intermediate",
+    "حرفه‌ای": "advanced",
+    "حرفه ای": "advanced",
+    "مدرس": "teacher",
+}
+
+
 @router.get("/musicians")
 def search_musicians(
     q: str | None = Query(default=None, max_length=100),
     city_id: int | None = Query(default=None, ge=1),
+    city: str | None = Query(default=None, max_length=100),
     instrument_id: str | None = Query(default=None, max_length=100),
+    instrument: str | None = Query(default=None, max_length=100),
     level: str | None = Query(default=None, max_length=50),
+    skill: str | None = Query(default=None, max_length=50),
+    style: str | None = Query(default=None, max_length=100),
     online: bool = Query(default=False),
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """Search active musician profiles with text, city, instrument, level, presence and pagination."""
+    """Search active musician profiles with canonical filters and UI-friendly aliases."""
     query = (
         db.query(Profile)
         .join(User, User.id == Profile.user_id)
         .filter(User.is_active.is_(True))
     )
 
-    if q and q.strip():
-        term = f"%{q.strip()}%"
-        query = (
-            query.outerjoin(UserInstrument, UserInstrument.user_id == Profile.user_id)
-            .outerjoin(Instrument, Instrument.id == UserInstrument.instrument_id)
-            .filter(
-                or_(
-                    Profile.display_name.ilike(term),
-                    Profile.bio.ilike(term),
-                    Profile.city.ilike(term),
-                    Instrument.name.ilike(term),
-                    Instrument.family.ilike(term),
-                )
-            )
+    # Accept both canonical IDs and the Persian labels used by the public UI.
+    if city_id is None and city and city.strip():
+        city_ref = (
+            db.query(City)
+            .filter(City.is_active.is_(True), or_(City.name == city.strip(), City.api_value == city.strip(), City.slug == city.strip()))
+            .first()
         )
+        if city_ref:
+            city_id = city_ref.id
+        else:
+            query = query.filter(Profile.city.ilike(f"%{city.strip()}%"))
 
     if city_id is not None:
         query = query.filter(Profile.city_id == city_id)
 
-    if instrument_id is not None or level is not None:
+    resolved_instrument_id = instrument_id
+    if resolved_instrument_id is None and instrument and instrument.strip():
+        instrument_ref = (
+            db.query(Instrument)
+            .filter(Instrument.name.ilike(instrument.strip()))
+            .first()
+        )
+        if instrument_ref:
+            resolved_instrument_id = str(instrument_ref.id)
+
+    resolved_level = level or (LEVEL_ALIASES.get(skill.strip()) if skill and skill.strip() else None)
+
+    # Keep style backward-compatible: there is no normalized style field yet,
+    # so include it in the existing text search instead of silently ignoring it.
+    terms = [value.strip() for value in (q, style) if value and value.strip()]
+    if terms:
+        query = (
+            query.outerjoin(UserInstrument, UserInstrument.user_id == Profile.user_id)
+            .outerjoin(Instrument, Instrument.id == UserInstrument.instrument_id)
+            .filter(
+                or_(*[
+                    clause
+                    for term in terms
+                    for clause in (
+                        Profile.display_name.ilike(f"%{term}%"),
+                        Profile.bio.ilike(f"%{term}%"),
+                        Profile.city.ilike(f"%{term}%"),
+                        Instrument.name.ilike(f"%{term}%"),
+                        Instrument.family.ilike(f"%{term}%"),
+                    )
+                ])
+            )
+        )
+
+    if resolved_instrument_id is not None or resolved_level is not None:
         query = query.join(UserInstrument, UserInstrument.user_id == Profile.user_id)
 
-    if instrument_id is not None:
-        query = query.filter(UserInstrument.instrument_id == instrument_id)
+    if resolved_instrument_id is not None:
+        query = query.filter(UserInstrument.instrument_id == resolved_instrument_id)
 
-    if level is not None:
-        query = query.filter(UserInstrument.level == level)
+    if resolved_level is not None:
+        query = query.filter(UserInstrument.level == resolved_level)
 
     online_cutoff = datetime.now(timezone.utc) - timedelta(minutes=5)
     if online:
@@ -74,17 +117,17 @@ def search_musicians(
 
     output = []
     for profile in results:
-        city = cities.get(profile.city_id)
+        city_ref = cities.get(profile.city_id)
         is_online = bool(profile.user.last_seen_at and profile.user.last_seen_at >= online_cutoff)
         output.append(
             {
                 "user_id": profile.user_id,
                 "display_name": profile.display_name,
                 "birth_year": profile.birth_year,
-                "city": city.api_value if city else profile.city,
+                "city": city_ref.api_value if city_ref else profile.city,
                 "city_id": profile.city_id,
-                "city_name": city.name if city else profile.city,
-                "city_slug": city.slug if city else None,
+                "city_name": city_ref.name if city_ref else profile.city,
+                "city_slug": city_ref.slug if city_ref else None,
                 "is_verified": profile.is_verified,
                 "is_online": is_online,
                 "last_seen_at": profile.user.last_seen_at,
