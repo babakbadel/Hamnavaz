@@ -19,11 +19,7 @@ function authHeaders(init?: RequestInit): Headers {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: authHeaders(init),
-    cache: "no-store",
-  });
+  const res = await fetch(`${API_URL}${path}`, { ...init, headers: authHeaders(init), cache: "no-store" });
   if (!res.ok) {
     let detail = "ارتباط با سرویس همنواز ناموفق بود";
     try {
@@ -55,8 +51,12 @@ export type MusicianSearchParams = {
   page?: number;
   limit?: number;
   city_id?: number;
+  city?: string;
   instrument_id?: string;
+  instrument?: string;
   level?: string;
+  skill?: string;
+  style?: string;
   online?: boolean;
 };
 
@@ -65,17 +65,11 @@ export type Notification = { id: number; user_id: number; title: string; text: s
 export type Message = { id: string; sender_profile_id: string; receiver_profile_id: string; text: string; is_read: boolean; created_at?: string };
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
-  return request<AuthResponse>("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
+  return request<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
 }
 
 export async function register(username: string, email: string, password: string) {
-  return request<{ id: number; username: string; email: string }>("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ username, email, password }),
-  });
+  return request<{ id: number; username: string; email: string }>("/auth/register", { method: "POST", body: JSON.stringify({ username, email, password }) });
 }
 
 export async function searchMusicians(params: MusicianSearchParams = {}) {
@@ -84,8 +78,12 @@ export async function searchMusicians(params: MusicianSearchParams = {}) {
   query.set("limit", String(params.limit ?? 20));
   if (params.q?.trim()) query.set("q", params.q.trim());
   if (params.city_id != null) query.set("city_id", String(params.city_id));
+  if (params.city?.trim()) query.set("city", params.city.trim());
   if (params.instrument_id) query.set("instrument_id", params.instrument_id);
+  if (params.instrument?.trim()) query.set("instrument", params.instrument.trim());
   if (params.level) query.set("level", params.level);
+  if (params.skill?.trim()) query.set("skill", params.skill.trim());
+  if (params.style?.trim()) query.set("style", params.style.trim());
   if (params.online) query.set("online", "true");
   return request<{ total: number; page: number; limit: number; pages: number; results: Musician[] }>(`/search/musicians?${query.toString()}`);
 }
