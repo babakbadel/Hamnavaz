@@ -13,11 +13,17 @@
 - Hardened CI permissions to read-only repository access.
 - Expanded scheduled production smoke checks to cover frontend routes, security headers and protected API boundaries.
 - Extended architecture decisions with the production boundary and presence semantics.
+- Added a dedicated frontend CI gate for Node 22, `npm ci`, TypeScript typechecking and the production Next.js build.
 
 ### Verification baseline
 
 - Vercel Production deployment for the current main line is `READY` and the GitHub commit status reports Vercel success.
 - Full local execution could not be run from the current assistant runtime because outbound GitHub DNS/network access is unavailable; CI/Vercel remains the authoritative remote execution path.
+
+### Agent coordination
+
+- Shared production integration audit is maintained in `AUDIT_2026-08-22.md`.
+- Grok and ChatGPT must use `main` plus the audit/project-memory files as the shared source of truth.
 
 ## 2026-08-21
 
