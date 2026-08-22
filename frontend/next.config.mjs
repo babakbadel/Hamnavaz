@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -11,9 +10,7 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
-  ...(isGitHubPages ? { output: 'export' } : {}),
   trailingSlash: true,
-  ...(isGitHubPages ? { basePath: '/Hamnavaz' } : {}),
   poweredByHeader: false,
   images: {
     unoptimized: true,
