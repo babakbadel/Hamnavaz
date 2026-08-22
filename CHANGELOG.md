@@ -2,6 +2,12 @@
 
 ## 2026-08-22
 
+### Product integration
+
+- Replaced Home's hard-coded online musician cards with the canonical `/search/musicians?online=true` API contract.
+- Added loading, empty and API-error states instead of silently showing fake online users.
+- Online musician cards now use API profile IDs, display names, city data and avatar URLs and link to the musician route.
+
 ### Architecture / Reliability
 
 - Added explicit strict TypeScript configuration for the Next.js App Router.
