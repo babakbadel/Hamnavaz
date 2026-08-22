@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { sendCollaboration } from "../../../lib/api-client";
+import { ApiError, sendCollaboration } from "../../../lib/api";
 
 export default function CollaborationRequest({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -16,16 +16,23 @@ export default function CollaborationRequest({ params }: { params: Promise<{ id:
     e.preventDefault();
     const token = localStorage.getItem("hamnavaz_token");
     const { id } = await params;
+
     if (!token) {
-      router.push(`/auth/login?next=/collaboration/${id}`);
+      router.push(`/auth/login?next=/collaboration/${encodeURIComponent(id)}`);
       return;
     }
+
     setLoading(true);
     setError("");
     try {
-      await sendCollaboration(id, message);
+      await sendCollaboration(id, message.trim());
       setDone(true);
     } catch (e) {
+      if (e instanceof ApiError && e.status === 401) {
+        localStorage.removeItem("hamnavaz_token");
+        router.push(`/auth/login?next=/collaboration/${encodeURIComponent(id)}`);
+        return;
+      }
       setError(e instanceof Error ? e.message : "ارسال درخواست ناموفق بود.");
     } finally {
       setLoading(false);
@@ -34,15 +41,31 @@ export default function CollaborationRequest({ params }: { params: Promise<{ id:
 
   return (
     <main className="container page-shell" dir="rtl">
-      <nav className="nav"><Link className="brand" href="/"><span>♪</span> همنواز</Link><Link className="login" href="/musicians">نوازنده‌ها</Link></nav>
+      <nav className="nav">
+        <Link className="brand" href="/"><span>♪</span> همنواز</Link>
+        <Link className="login" href="/musicians">نوازنده‌ها</Link>
+      </nav>
+
       <section className="auth-card collaboration-card">
         <p className="eyebrow">شروع همکاری</p>
         <h1>یک پیام موسیقیایی بفرست.</h1>
-        {done ? <><div className="success-message">درخواست همکاری با موفقیت ارسال شد. 🎵</div><Link className="cta-button" href="/messages">رفتن به پیام‌ها</Link></> : <form className="auth-form" onSubmit={submit}>
-          <label>پیام شما<textarea value={message} onChange={e => setMessage(e.target.value)} rows={7} maxLength={2000} required /></label>
-          {error && <div className="auth-error">{error}</div>}
-          <button className="primary-action auth-submit" disabled={loading}>{loading ? "در حال ارسال..." : "ارسال درخواست همکاری"}</button>
-        </form>}
+        {done ? (
+          <>
+            <div className="success-message">درخواست همکاری با موفقیت ارسال شد. 🎵</div>
+            <Link className="cta-button" href="/messages">رفتن به پیام‌ها</Link>
+          </>
+        ) : (
+          <form className="auth-form" onSubmit={submit}>
+            <label>
+              پیام شما
+              <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={7} maxLength={2000} required />
+            </label>
+            {error && <div className="auth-error">{error}</div>}
+            <button className="primary-action auth-submit" disabled={loading || !message.trim()}>
+              {loading ? "در حال ارسال..." : "ارسال درخواست همکاری"}
+            </button>
+          </form>
+        )}
       </section>
     </main>
   );
