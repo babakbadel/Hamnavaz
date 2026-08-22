@@ -7,6 +7,10 @@
 - Replaced Home's hard-coded online musician cards with the canonical `/search/musicians?online=true` API contract.
 - Added loading, empty and API-error states instead of silently showing fake online users.
 - Online musician cards now use API profile IDs, display names, city data and avatar URLs and link to the musician route.
+- Extended musician discovery API support so the public Home filter labels (`city`, `instrument`, `skill`, `style`) are no longer silently ignored.
+- Added Persian skill aliases for the normalized musician instrument levels.
+- Kept style filtering backward-compatible through the existing text-search fields until a normalized style domain is introduced.
+- Extended the typed frontend API client with the same discovery filter aliases.
 
 ### Architecture / Reliability
 
@@ -23,7 +27,7 @@
 
 ### Verification baseline
 
-- Vercel Production deployment for the current main line is `READY` and the GitHub commit status reports Vercel success.
+- The latest discovery integration commit has a Vercel status currently pending; it must reach `SUCCESS` before the change is considered production-verified.
 - Full local execution could not be run from the current assistant runtime because outbound GitHub DNS/network access is unavailable; CI/Vercel remains the authoritative remote execution path.
 
 ### Agent coordination
