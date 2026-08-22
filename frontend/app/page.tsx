@@ -2,18 +2,12 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import { searchMusicians, type Musician } from "../../lib/api";
 
 const instruments = ["گیتار", "پیانو", "ویولن", "دف", "تار", "سه‌تار"];
 const cities = ["تهران", "اصفهان", "شیراز", "مشهد", "تبریز"];
 const skills = ["مبتدی", "متوسط", "حرفه‌ای", "مدرس"];
 const styles = ["پاپ", "سنتی", "راک", "کلاسیک", "جاز"];
-
-const onlineMusicians = [
-  { name: "آرمان", instrument: "گیتار · پاپ", city: "تهران", avatar: "🎸" },
-  { name: "سارا", instrument: "پیانو · کلاسیک", city: "اصفهان", avatar: "🎹" },
-  { name: "امیر", instrument: "دف · سنتی", city: "شیراز", avatar: "🥁" },
-  { name: "نگار", instrument: "ویولن · پاپ", city: "تهران", avatar: "🎻" },
-];
 
 const teachers = [
   { name: "استاد مهدی", instrument: "گیتار", level: "حرفه‌ای", avatar: "🎸" },
@@ -34,8 +28,30 @@ export default function HomePage() {
   const [instrument, setInstrument] = useState("");
   const [skill, setSkill] = useState("");
   const [style, setStyle] = useState("");
+  const [onlineMusicians, setOnlineMusicians] = useState<Musician[]>([]);
+  const [onlineLoading, setOnlineLoading] = useState(true);
+  const [onlineError, setOnlineError] = useState(false);
 
   useEffect(() => setLoggedIn(Boolean(localStorage.getItem("hamnavaz_token"))), []);
+
+  useEffect(() => {
+    let active = true;
+    searchMusicians({ online: true, limit: 4 })
+      .then((data) => {
+        if (!active) return;
+        setOnlineMusicians(data.results.slice(0, 4));
+        setOnlineError(false);
+      })
+      .catch(() => {
+        if (!active) return;
+        setOnlineMusicians([]);
+        setOnlineError(true);
+      })
+      .finally(() => {
+        if (active) setOnlineLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
 
   function discover(e: FormEvent) {
     e.preventDefault();
@@ -52,20 +68,9 @@ export default function HomePage() {
     <style>{`
       .online-grid { display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; grid-auto-flow:row !important; grid-auto-columns:unset !important; overflow:visible !important; }
       .online-grid > * { min-width:0 !important; }
-      .person-card,.teacher-card,.music-card,.concert-card,.ticket-card,.instrument-grid a {
-        position:relative;
-        border:1px solid rgba(215,181,106,.48) !important;
-        box-shadow:0 0 0 1px rgba(215,181,106,.10),0 0 14px rgba(215,181,106,.16),0 10px 28px rgba(0,0,0,.28) !important;
-      }
-      .person-card:before,.teacher-card:before,.music-card:before,.concert-card:before,.ticket-card:before,.instrument-grid a:before {
-        content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
-        box-shadow:inset 0 0 12px rgba(215,181,106,.08),0 0 8px rgba(215,181,106,.12);
-      }
-      .person-card:hover,.teacher-card:hover,.music-card:hover,.concert-card:hover,.ticket-card:hover,.instrument-grid a:hover {
-        border-color:#e7c978 !important;
-        box-shadow:0 0 0 1px rgba(231,201,120,.30),0 0 22px rgba(215,181,106,.34),0 16px 42px rgba(0,0,0,.34) !important;
-        transform:translateY(-3px);
-      }
+      .person-card,.teacher-card,.music-card,.concert-card,.ticket-card,.instrument-grid a { position:relative; border:1px solid rgba(215,181,106,.48) !important; box-shadow:0 0 0 1px rgba(215,181,106,.10),0 0 14px rgba(215,181,106,.16),0 10px 28px rgba(0,0,0,.28) !important; }
+      .person-card:before,.teacher-card:before,.music-card:before,.concert-card:before,.ticket-card:before,.instrument-grid a:before { content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 12px rgba(215,181,106,.08),0 0 8px rgba(215,181,106,.12); }
+      .person-card:hover,.teacher-card:hover,.music-card:hover,.concert-card:hover,.ticket-card:hover,.instrument-grid a:hover { border-color:#e7c978 !important; box-shadow:0 0 0 1px rgba(231,201,120,.30),0 0 22px rgba(215,181,106,.34),0 16px 42px rgba(0,0,0,.34) !important; transform:translateY(-3px); }
       .online-grid .person-card { box-shadow:0 0 0 1px rgba(215,181,106,.12),0 0 18px rgba(215,181,106,.22),0 10px 30px rgba(0,0,0,.3) !important; }
       .online-grid .online-dot { text-shadow:0 0 8px rgba(143,208,159,.65); }
       @media (max-width:900px) { .online-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
@@ -91,7 +96,15 @@ export default function HomePage() {
       <div className="hero-visual"><div className="hero-note">♫</div><strong>یک پیام می‌تواند شروع یک همکاری باشد.</strong><span>تمرین · هم‌نوازی · آموزش · اجرا</span></div>
     </section>
 
-    <section className="section container"><SectionHead title="همین حالا آنلاین‌اند" text="اگر می‌خواهی همین امروز شروع کنی، از نوازنده‌هایی که آنلاین هستند پیدا کن." action="مشاهده همه" href="/musicians?online=true"/><div className="people-grid online-grid">{onlineMusicians.map(p => <article className="person-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>📍 {p.city}</small></div><b className="online-dot">● آنلاین</b></article>)}</div></section>
+    <section className="section container"><SectionHead title="همین حالا آنلاین‌اند" text="اگر می‌خواهی همین امروز شروع کنی، از نوازنده‌هایی که آنلاین هستند پیدا کن." action="مشاهده همه" href="/musicians?online=true"/><div className="people-grid online-grid">
+      {onlineLoading && <div className="person-card"><div><h3>در حال دریافت نوازنده‌ها…</h3><p>اتصال به همنواز</p></div></div>}
+      {!onlineLoading && onlineMusicians.map((p) => <Link href={`/musicians/${encodeURIComponent(p.id)}`} className="person-card" key={p.id}>
+        <div className="avatar">{p.avatar_url ? <img src={p.avatar_url} alt="" width={52} height={52} /> : "🎵"}</div>
+        <div><h3>{p.display_name}</h3><p>نوازنده همنواز</p><small>📍 {p.city_name || p.city || "شهر ثبت نشده"}</small></div>
+        <b className="online-dot">● آنلاین</b>
+      </Link>)}
+      {!onlineLoading && onlineMusicians.length === 0 && <div className="person-card"><div><h3>{onlineError ? "اتصال به سرویس همنواز برقرار نشد" : "نوازنده‌ای آنلاین نیست"}</h3><p>{onlineError ? "لطفاً چند لحظه بعد دوباره تلاش کن." : "وقتی نوازنده‌ها آنلاین شوند اینجا نمایش داده می‌شوند."}</p></div></div>}
+    </div></section>
 
     <section className="section section-soft"><div className="container"><SectionHead title="مدرسان" text="برای یادگیری سازت، مدرس مناسب را پیدا کن و مسیرت را جدی‌تر ادامه بده." action="همه مدرسان" href="/teachers"/><div className="people-grid">{teachers.map(p => <article className="teacher-card" key={p.name}><div className="avatar">{p.avatar}</div><div><h3>{p.name}</h3><p>{p.instrument}</p><small>سطح: {p.level}</small></div><Link href="/teachers">مشاهده</Link></article>)}</div></div></section>
 
