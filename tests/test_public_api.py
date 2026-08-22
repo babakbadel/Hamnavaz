@@ -47,3 +47,11 @@ def test_protected_endpoints_require_authentication():
     assert client.get("/api/match/me").status_code in {401, 403}
     assert client.get("/api/messages/").status_code in {401, 403}
     assert client.get("/api/notifications/").status_code in {401, 403}
+
+
+def test_musician_search_supports_presence_filter():
+    response = client.get("/api/search/musicians?online=true")
+    assert response.status_code == 200
+    payload = response.json()
+    assert {"total", "page", "limit", "pages", "results"}.issubset(payload)
+    assert all("is_online" in item for item in payload["results"])
