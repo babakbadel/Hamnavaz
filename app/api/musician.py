@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
@@ -20,17 +22,33 @@ def _instrument_payload(row: UserInstrument) -> dict:
     }
 
 
+def _presence(user: User) -> tuple[bool, str | None]:
+    last_seen = user.last_seen_at
+    if last_seen is None:
+        return False, None
+
+    if last_seen.tzinfo is None:
+        last_seen = last_seen.replace(tzinfo=timezone.utc)
+
+    is_online = last_seen >= datetime.now(timezone.utc) - timedelta(minutes=5)
+    return is_online, last_seen.isoformat()
+
+
 def _profile_payload(profile: Profile, instruments: list[UserInstrument]) -> dict:
+    is_online, last_seen_at = _presence(profile.user)
     return {
         "id": str(profile.id),
         "user_id": profile.user_id,
         "display_name": profile.display_name,
         "city": profile.city,
+        "city_id": profile.city_id,
         "bio": profile.bio,
         "birth_year": profile.birth_year,
         "gender": profile.gender,
         "avatar_url": profile.avatar_url,
         "is_verified": profile.is_verified,
+        "is_online": is_online,
+        "last_seen_at": last_seen_at,
         "instruments": [_instrument_payload(row) for row in instruments],
     }
 
@@ -111,4 +129,5 @@ def get_musician(user_id: int, db: Session = Depends(get_db)):
     return {
         "user": {"id": user.id, "is_active": user.is_active},
         "profile": _profile_payload(profile, instruments),
+        "instruments": [_instrument_payload(row) for row in instruments],
     }
