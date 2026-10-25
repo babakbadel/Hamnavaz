@@ -48,7 +48,7 @@ This repair does not close Epic #5 or any workstream. Local verification is not 
 - Baseline and candidate tests used temporary/local databases only; no production data was read or migrated.
 - Browser traces, screenshots and videos are disabled to avoid persisting bearer tokens.
 - Direct Playwright browser download failed in this environment. An isolated Chromium 143 binary from the npm-packaged `@sparticuz/chromium` was used for local browser execution; that temporary dependency is not added to the project. CI installs the standard Playwright-managed browser.
-- Project settings, environment variables and production deployment are not changed by this patch.
+- Vercel project settings were corrected to repository-root Services and Node 22 after the code commit. Environment variables, production data and the published production deployment were not changed.
 
 ## Final local verification
 
@@ -58,3 +58,17 @@ This repair does not close Epic #5 or any workstream. Local verification is not 
 - Playwright 1.64.1 / local Chromium 143: **2 browser scenarios passed in 27.2s**. Desktop uses reduced motion; Pixel 7 emulation uses normal motion. This is Chromium mobile emulation, not a physical Android device test.
 - Frontend API-boundary guard, shell syntax, `git diff --check`, and Python compileall passed. Five unused legacy schema scaffolds had unresolved template tokens that prevented Python compilation; those tokens were replaced with explicit empty scaffolds, without inventing fields.
 - No client page runtime errors were observed in the two browser scenarios. Full console/network error certification and load testing are not claimed.
+
+## Remote verification and current blocker
+
+Code commit: `c40cdda0bfde0b34c2ab75f778a679098c495677`. Draft PR: https://github.com/babakbadel/Hamnavaz/pull/17.
+
+- GitHub CI run https://github.com/babakbadel/Hamnavaz/actions/runs/40217187133 completed **SUCCESS**: frontend, backend, E2E. The standard CI Playwright browser passed both scenarios in 21.8 seconds, removing the local fallback-browser uncertainty for the tested code.
+- The initial automatic frontend-only preview returned Next.js 404 at `/api/health` despite READY.
+- The project root/framework/Node settings were corrected to root / Services / 22.x. A new preview, `dpl_D9MJsQnF9KwyGGGzmLJa9ZatqaGn`, reached READY and build logs confirmed Python 3.12 and backend dependency installation.
+- Requests now reach the backend Python service. Preview `/api/health`, OpenAPI, search and protected route return 500 because application import fails when SQLAlchemy parses the configured `DATABASE_URL`: `Could not parse SQLAlchemy URL from given URL string`.
+- The configured database credential/value was not retrieved or printed. Do not replace an invalid production/preview database setting with ephemeral SQLite merely to make smoke green.
+- Next dependency: confirm whether the user already has a persistent database, configure a valid URL directly in Vercel, verify the appropriate driver/schema/backup, and then perform a controlled migration and deployed flow verification. Creating a new provider was previously deferred and is not silently done here.
+- The published production domain still points to the old baseline; no merge or promotion was performed. Epic #5 remains open.
+
+The follow-up commit records remote evidence only; the green CI above belongs to the tested code commit named explicitly here.

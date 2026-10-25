@@ -27,7 +27,7 @@ The project is not declared production-complete until all unchecked quality gate
 - [x] Local Node 22 typecheck and production build.
 - [x] Desktop/mobile browser core flow: 2 passed.
 - [x] Active frontend API boundary and Python compilation checks.
-- [ ] Candidate GitHub CI green.
+- [x] Code candidate `c40cdda` GitHub CI green (run 40217187133; frontend/backend/E2E).
 - [ ] Persistent production database and controlled migration verified.
 - [ ] Canonical Vercel root/service settings and dual-runtime preview verified.
 - [ ] Exact candidate production smoke and real-user flow verified.

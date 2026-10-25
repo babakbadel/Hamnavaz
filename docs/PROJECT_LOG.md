@@ -1,5 +1,9 @@
 # Hamnavaz — Project Log
 
+## 2026-10-25 — Remote handoff
+
+PR #17 code commit `c40cdda` passed GitHub frontend/backend/E2E (run 40217187133). Project settings were corrected to repository-root Services with Node 22; published production was not promoted. Canonical preview now invokes Python but fails app import due to an invalid configured DATABASE_URL. No database credential was read, no new provider was provisioned, and no production data was migrated. Resume from this environment blocker; do not redo the completed code repair or treat READY as an API health result.
+
 ## 2026-10-25 — Release gate repair
 
 Canonical deployment: root `vercel.json` → Next.js `frontend/` + FastAPI `app.main:app`. Earlier entries below are historical and do not override `docs/DEPLOYMENT.md`.
