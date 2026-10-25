@@ -1,3 +1,13 @@
+## 2026-10-25 — Release gate repair
+
+- Fix profile create/update integration, shared API usage, browser profile loading, and profile UUID links for collaboration/messages.
+- Fix presence timestamp handling, typed UUID route parameters, and instrument/skill filtering; connect discovery controls to real search.
+- Add messages/index migration, migrate isolated test databases, and remove startup schema creation.
+- Add production JWT/CORS fail-closed checks and configurable Google callback.
+- Add frontend lockfile, API-boundary check, assertions for API regression, real two-user flow tests and desktop/mobile browser coverage.
+- Consolidate CI and deployment adapters; check smoke JSON contracts and the deployed backend commit after deployment completion.
+- Document required Vercel root/service settings, persistent-database blocker and rollback considerations.
+
 # Hamnavaz — Changelog
 
 ## 2026-08-22

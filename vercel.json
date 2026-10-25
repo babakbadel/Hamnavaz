@@ -3,7 +3,8 @@
   "services": {
     "frontend": {
       "root": "frontend/",
-      "framework": "nextjs"
+      "framework": "nextjs",
+      "installCommand": "npm ci"
     },
     "backend": {
       "root": ".",
@@ -14,11 +15,15 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": { "service": "backend" }
+      "destination": {
+        "service": "backend"
+      }
     },
     {
       "source": "/(.*)",
-      "destination": { "service": "frontend" }
+      "destination": {
+        "service": "frontend"
+      }
     }
   ]
 }

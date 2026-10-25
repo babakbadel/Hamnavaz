@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ArtistBase(BaseModel):
-{{FIELDS}}
+    pass  # Legacy scaffold; no fields have been defined.
 
 
 class ArtistCreate(ArtistBase):

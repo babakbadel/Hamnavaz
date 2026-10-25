@@ -5,12 +5,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import register_routers
 from app.core.config import settings
-from app.database.session import create_tables
+
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_tables()
     yield
 
 
@@ -19,14 +18,6 @@ api_app = FastAPI(
     version=settings.APP_VERSION,
     lifespan=lifespan,
 )
-
-
-@api_app.middleware("http")
-async def normalize_api_prefix(request, call_next):
-    """Allow the API service to work both mounted at /api and standalone on Vercel."""
-    if request.scope["path"] == "/api" or request.scope["path"].startswith("/api/"):
-        request.scope["path"] = request.scope["path"][4:] or "/"
-    return await call_next(request)
 
 
 register_routers(api_app)

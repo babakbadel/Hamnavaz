@@ -8,6 +8,7 @@ from app.database.session import get_db
 from app.domains.music.instruments.model import UserInstrument
 from app.domains.profiles.model import Profile
 from app.domains.users.model import User
+from app.schemas.profile import ProfileUpdate
 
 router = APIRouter(prefix="/musician", tags=["Musician"])
 
@@ -55,8 +56,8 @@ def _profile_payload(profile: Profile, instruments: list[UserInstrument]) -> dic
 
 @router.post("/profile")
 def create_profile(
-    display_name: str = Query(min_length=1, max_length=120),
-    city: str | None = Query(default=None, max_length=120),
+    display_name: str = Query(min_length=1, max_length=100),
+    city: str | None = Query(default=None, max_length=100),
     bio: str | None = Query(default=None, max_length=2000),
     birth_year: int | None = Query(default=None, ge=1900, le=2026),
     gender: str | None = Query(default=None, max_length=30),
@@ -64,6 +65,8 @@ def create_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if not display_name.strip():
+        raise HTTPException(status_code=422, detail="Display name cannot be blank")
     existing = db.query(Profile).filter(Profile.user_id == current_user.id).first()
     if existing:
         raise HTTPException(status_code=409, detail="Profile already exists")
@@ -81,6 +84,27 @@ def create_profile(
     db.commit()
     db.refresh(profile)
     return _profile_payload(profile, [])
+
+
+@router.patch("/profile")
+def update_profile(
+    data: ProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+    if profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    profile.display_name = data.display_name
+    # A text-city change must not leave an unrelated normalized city attached.
+    if profile.city != data.city:
+        profile.city_id = None
+    profile.city = data.city
+    profile.bio = data.bio
+    db.commit()
+    db.refresh(profile)
+    instruments = db.query(UserInstrument).filter(UserInstrument.user_id == current_user.id).all()
+    return _profile_payload(profile, instruments)
 
 
 @router.get("/me")

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import or_
@@ -26,7 +27,7 @@ def search_musicians(
     q: str | None = Query(default=None, max_length=100),
     city_id: int | None = Query(default=None, ge=1),
     city: str | None = Query(default=None, max_length=100),
-    instrument_id: str | None = Query(default=None, max_length=100),
+    instrument_id: UUID | None = Query(default=None),
     instrument: str | None = Query(default=None, max_length=100),
     level: str | None = Query(default=None, max_length=50),
     skill: str | None = Query(default=None, max_length=50),
@@ -72,9 +73,11 @@ def search_musicians(
             .first()
         )
         if instrument_ref:
-            resolved_instrument_id = str(instrument_ref.id)
+            resolved_instrument_id = instrument_ref.id
+        else:
+            query = query.filter(False)
 
-    resolved_level = level or (LEVEL_ALIASES.get(skill.strip()) if skill and skill.strip() else None)
+    resolved_level = level or (LEVEL_ALIASES.get(skill.strip(), skill.strip()) if skill and skill.strip() else None)
 
     terms = [value.strip() for value in (q, style) if value and value.strip()]
     needs_instrument_join = resolved_instrument_id is not None or resolved_level is not None or bool(terms)
@@ -120,7 +123,10 @@ def search_musicians(
     output = []
     for profile in results:
         city_ref = cities.get(profile.city_id)
-        is_online = bool(profile.user.last_seen_at and profile.user.last_seen_at >= online_cutoff)
+        last_seen = profile.user.last_seen_at
+        if last_seen is not None and last_seen.tzinfo is None:
+            last_seen = last_seen.replace(tzinfo=timezone.utc)
+        is_online = bool(last_seen and last_seen >= online_cutoff)
         output.append(
             {
                 "user_id": profile.user_id,

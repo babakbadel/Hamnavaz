@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -61,7 +62,7 @@ def my_favorites(
 
 @router.delete("/{profile_id}")
 def delete_favorite(
-    profile_id: str,
+    profile_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

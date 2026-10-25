@@ -92,3 +92,10 @@ alembic/versions_archive_clean_reset/
 
 # Local SQLite databases
 *.db
+
+# TypeScript generated output
+*.tsbuildinfo
+frontend/next-env.d.ts
+
+frontend/test-results/
+frontend/playwright-report/

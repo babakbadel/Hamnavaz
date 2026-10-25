@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class TestBandBase(BaseModel):
-{{FIELDS}}
+    pass  # Legacy scaffold; no fields have been defined.
 
 
 class TestBandCreate(TestBandBase):

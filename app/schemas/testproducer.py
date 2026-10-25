@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class TestProducerBase(BaseModel):
-{{FIELDS}}
+    pass  # Legacy scaffold; no fields have been defined.
 
 
 class TestProducerCreate(TestProducerBase):

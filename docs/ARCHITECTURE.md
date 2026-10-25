@@ -3,16 +3,16 @@
 ## Runtime boundaries
 
 - `app/main.py` is the canonical FastAPI application.
-- `backend/main.py` is the Vercel backend service adapter and exports `app` from `app.main`.
+- The backend service uses `app.main:app` directly from the repository root.
 - `frontend/` is the Next.js application.
-- `frontend/api/index.py` is retained only as a legacy compatibility entrypoint; new Vercel routing must use `backend/main.py`.
+- Legacy Vercel function adapters are removed; see `docs/DEPLOYMENT.md` for required project settings.
 
 ## Request flow
 
 ```text
 Browser
   -> Vercel
-      -> /api/* -> backend service -> backend/main.py -> app.main:app
+      -> /api/* -> backend service -> app.main:app
       -> /*    -> frontend service -> Next.js
 ```
 

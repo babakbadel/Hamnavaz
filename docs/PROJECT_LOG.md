@@ -1,5 +1,16 @@
 # Hamnavaz — Project Log
 
+## 2026-10-25 — Release gate repair
+
+Canonical deployment: root `vercel.json` → Next.js `frontend/` + FastAPI `app.main:app`. Earlier entries below are historical and do not override `docs/DEPLOYMENT.md`.
+
+Baseline reproduced: pytest 15 PASS / 2 FAIL; the online search failed on timezone-naive SQLite timestamps and the profile smoke expected the wrong response envelope. Migration history omitted messages; metadata creation in tests hid this gap. Production smoke run 40210653655 passed frontend pages and three headers, then failed `/api/health` with a Next.js HTML 404.
+
+Repairs: isolated migration-backed tests; messages/city-index migration; authenticated profile update; shared browser API client; profile UUID links; real search controls; typed UUID boundaries; production secret/CORS validation; lockfile and consolidated CI/E2E; JSON/SHA-aware after-deployment smoke. Graph: User → Profile → Discovery/Presence → Match → Collaboration → Message → Notification is the verification path. Capacity: bounded API query limits are retained; load and capacity benchmarking are not claimed by this patch.
+
+See `docs/RELEASE_READINESS.md` for final verification and remaining release blockers.
+
+
 ## 2026-08-21 — Continuation baseline
 
 ### Current architecture

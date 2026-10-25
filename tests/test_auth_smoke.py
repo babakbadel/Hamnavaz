@@ -67,7 +67,7 @@ def test_authenticated_profile_flow():
 
         current = client.get("/musician/me", headers=headers)
         assert current.status_code == 200
-        assert current.json()["profile"]["display_name"] == "CI Musician"
+        assert current.json()["display_name"] == "CI Musician"
 
 
 def test_protected_profile_requires_authentication():

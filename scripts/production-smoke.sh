@@ -28,6 +28,25 @@ check() {
   fi
 }
 
+assert_json() {
+  local kind="$1"
+  python3 - "$TMP" "$kind" "${HAMNAVAZ_EXPECTED_SHA:-}" <<'JSON_CHECK'
+import json, sys
+with open(sys.argv[1]) as response:
+    data = json.load(response)
+kind, expected_sha = sys.argv[2:]
+if kind == "health":
+    assert data.get("status") == "ok", "API health is not healthy JSON"
+elif kind == "openapi":
+    assert "/search/musicians" in data.get("paths", {}), "Wrong OpenAPI application"
+elif kind == "search":
+    assert {"total", "page", "limit", "pages", "results"}.issubset(data), "Wrong search envelope"
+    assert isinstance(data["results"], list), "Wrong search results"
+elif kind == "version":
+    assert expected_sha and data.get("commit_sha") == expected_sha, "Production backend is not the expected commit"
+JSON_CHECK
+}
+
 check_header() {
   local url="$1"
   local label="$2"
@@ -62,11 +81,18 @@ check_header "${BASE_URL}/" "/" "referrer-policy" "strict-origin-when-cross-orig
 # a frontend 404 page as an API response. If API and frontend share a domain,
 # API_URL defaults to https://<frontend>/api.
 check "${API_URL}/health" "API /health" 200
+assert_json health
+if [[ -n "${HAMNAVAZ_EXPECTED_SHA:-}" ]]; then
+  check "${API_URL}/system/version" "API /system/version" 200
+  assert_json version
+fi
 check "${API_URL}/docs" "API /docs" 200
 check "${API_URL}/openapi.json" "API /openapi.json" 200
+assert_json openapi
 
 # Verify a real public domain endpoint, not only framework documentation.
 check "${API_URL}/search/musicians" "API /search/musicians" 200
+assert_json search
 
 # Protected API boundaries must reject unauthenticated access.
 check "${API_URL}/match/me" "API /match/me" 401
