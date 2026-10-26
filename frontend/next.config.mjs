@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 /** @type {import('next').NextConfig} */
 
 const securityHeaders = [
@@ -10,6 +12,7 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+  turbopack: { root: fileURLToPath(new URL(".", import.meta.url)) },
   trailingSlash: true,
   poweredByHeader: false,
   images: {

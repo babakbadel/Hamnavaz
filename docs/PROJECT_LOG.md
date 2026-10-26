@@ -1,3 +1,7 @@
+## 2026-10-26 — Neon PostgreSQL preparation
+
+Owner confirmed project `wild-waterfall-21366850`, branch `production` (`br-blue-darkness-b49hz8o7`), Free/PostgreSQL 18, Ohio. CLI init linked offline; deploy is blocked on browser authentication. Code keeps FastAPI/SQLAlchemy with Psycopg 3, pooled app traffic and direct migrations. See `NEON_SETUP.md` for credential placement, tested scope and the existing migration's offline SQL limitation. No live schema/data changes or production promotion were performed.
+
 # Hamnavaz — Project Log
 
 ## 2026-10-25 — Remote handoff

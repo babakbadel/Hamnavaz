@@ -72,3 +72,7 @@ Code commit: `c40cdda0bfde0b34c2ab75f778a679098c495677`. Draft PR: https://githu
 - The published production domain still points to the old baseline; no merge or promotion was performed. Epic #5 remains open.
 
 The follow-up commit records remote evidence only; the green CI above belongs to the tested code commit named explicitly here.
+
+## Neon setup continuation — 2026-10-26
+
+The owner has now confirmed the Neon database exists. See `NEON_SETUP.md` for the prepared Psycopg 3 wiring, 38 passing local tests, successful root build, and remaining credential/migration/live-flow verification. The older “confirm whether a database exists” dependency is resolved; secure connection configuration is still pending.

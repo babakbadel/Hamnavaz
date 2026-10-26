@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DATABASE_URL: str = "sqlite:///./hamnavaz.db"
 
+    DATABASE_URL_UNPOOLED: str | None = None
+
     JWT_SECRET_KEY: str = "CHANGE_THIS_SECRET_IN_PRODUCTION"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
@@ -22,7 +24,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8000,https://hamnavaz.vercel.app"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", ".env.local"),
         extra="ignore",
         case_sensitive=True,
     )

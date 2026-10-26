@@ -8,6 +8,7 @@ from alembic.config import Config
 
 # Never run tests against a developer/production database, even if DATABASE_URL is set.
 _test_database = TemporaryDirectory(prefix="hamnavaz-tests-")
+os.environ.pop("DATABASE_URL_UNPOOLED", None)
 os.environ["DATABASE_URL"] = f"sqlite:///{Path(_test_database.name) / 'test.db'}"
 
 
