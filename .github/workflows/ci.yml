@@ -29,6 +29,52 @@ jobs:
       - name: Run tests
         run: pytest -q
 
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: hamnavaz_ci
+          POSTGRES_PASSWORD: disposable_ci_only
+          POSTGRES_DB: hamnavaz_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hamnavaz_ci -d hamnavaz_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://hamnavaz_ci:disposable_ci_only@127.0.0.1:5432/hamnavaz_ci
+      DATABASE_URL_UNPOOLED: postgresql+psycopg://hamnavaz_ci:disposable_ci_only@127.0.0.1:5432/hamnavaz_ci
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version-file: '.python-version'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Migrate disposable PostgreSQL twice and check schema parity
+        run: |
+          alembic upgrade head
+          alembic upgrade head
+          alembic check
+      - name: Exercise real PostgreSQL user flows
+        run: |
+          python - <<'PY'
+          import runpy
+          # Do not load pytest conftest: it intentionally substitutes SQLite.
+          flows = runpy.run_path("tests/test_release_flow.py")
+          flows["test_two_user_release_flow_and_ownership"]()
+          flows["test_presence_expires_without_naive_datetime_error"]()
+          flows["test_unknown_instrument_does_not_return_unfiltered_people"]()
+          print("PostgreSQL release flows passed")
+          PY
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

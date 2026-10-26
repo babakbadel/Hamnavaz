@@ -59,10 +59,14 @@ test("register → profile edit → search → match → collaboration → messa
     await pageA.goto(profileUrl);
     await pageA.getByRole("link", { name: "ارسال پیام", exact: true }).click();
     await pageA.getByLabel("پیام جدید").fill(`message-${suffix}`);
+    const sentMessage = pageA.waitForResponse(response =>
+      new URL(response.url()).pathname === "/api/messages/" && response.request().method() === "POST");
     await pageA.getByRole("button", { name: "ارسال پیام", exact: true }).click();
-    await expect(pageA.getByText(`message-${suffix}`, { exact: true })).toBeVisible();
+    expect((await sentMessage).status()).toBe(200);
+    // A matching composer value is not proof that the server saved the message.
+    await expect(pageA.locator("article").getByText(`message-${suffix}`, { exact: true })).toBeVisible();
     await pageB.goto("/messages");
-    await expect(pageB.getByText(`message-${suffix}`, { exact: true })).toBeVisible();
+    await expect(pageB.locator("article").getByText(`message-${suffix}`, { exact: true })).toBeVisible();
     await pageB.goto("/activity");
     await expect(pageB.getByText("پیام جدید", { exact: true })).toBeVisible();
     await pageB.getByRole("button", { name: "خواندم", exact: true }).first().click();
@@ -70,6 +74,7 @@ test("register → profile edit → search → match → collaboration → messa
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
     throw error;
+  } finally {
+    await Promise.allSettled([contextA.close(), contextB.close()]);
   }
-  await Promise.allSettled([contextA.close(), contextB.close()]);
 });

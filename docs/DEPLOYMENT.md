@@ -57,3 +57,27 @@ npm run test:e2e
 ```
 
 Browser tests start a production Next.js build, a real FastAPI server backed by a temporary migrated database, and a local HTTP gateway that mirrors the public `/api/*` service split. This verifies the application boundary; it does not replace a Vercel preview check. They never use the developer/production database and do not record tokens in traces, videos or screenshots.
+
+## Safe database preflight and protected smoke
+
+From the reviewed candidate checkout, with private PostgreSQL variables already supplied securely:
+
+```bash
+.venv/bin/python scripts/database-preflight.py
+.venv/bin/python scripts/database-preflight.py --connect
+.venv/bin/alembic current
+.venv/bin/alembic heads
+```
+
+Only after checking the target and backup, run `alembic upgrade head` then `alembic check`. Do not run `upgrade head --sql` for the inspecting messages revision. Production migration and promotion must wait for the disposable PostgreSQL CI job and real staging verification.
+
+For protected previews use the authenticated Vercel CLI; protection stays enabled:
+
+```bash
+HAMNAVAZ_USE_VERCEL_AUTH=1 \
+HAMNAVAZ_BASE_URL="https://<exact-deployment-hostname>" \
+HAMNAVAZ_EXPECTED_SHA="<full-candidate-sha>" \
+bash scripts/production-smoke.sh
+```
+
+Use separate Preview database credentials. Do not paste connection strings into chat, shell arguments, commits or logs. If Neon is not connected, connect the Neon integration or enter private URLs directly in Vercel before live checks. Passing local SQLite or disposable PostgreSQL checks does not prove Neon connectivity.
