@@ -17,3 +17,13 @@ body{background:radial-gradient(circle at 75% -10%,rgba(30,49,77,.38),transparen
 @keyframes hz-online-pulse{0%,100%{opacity:.72;text-shadow:0 0 4px rgba(145,255,180,.65),0 0 9px rgba(110,255,160,.35)}50%{opacity:1;text-shadow:0 0 7px rgba(170,255,195,1),0 0 18px rgba(110,255,160,.72)}}
 .instrument-grid a:hover,.online-grid .person-card:hover{animation-duration:1.3s;transform:translateY(-3px)}
 @media(prefers-reduced-motion:reduce){.online-grid .person-card,.instrument-grid a,.online-grid .person-card:after,.instrument-grid a:after,.online-grid .online-dot{animation:none!important}}
+
+/* Respect the user's motion preference across the neon interface. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

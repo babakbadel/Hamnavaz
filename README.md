@@ -26,14 +26,14 @@ Frontend:
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
 Backend health check:
 
 ```text
-GET /health
+GET /api/health
 ```
 
 Production API health check through Vercel:
@@ -45,7 +45,6 @@ GET /api/health
 API documentation:
 
 ```text
-/docs
 /api/docs
 ```
 
@@ -59,3 +58,7 @@ API documentation:
 ## Project continuity
 
 `PROJECT_MEMORY.md`, `DECISIONS.md`, `CHANGELOG.md`, `TODO.md` and `docs/AI-OPS.md` are maintained as the repository-backed source of project continuity, decisions, Graphy relationships, Headroom rules and development logging.
+
+## Deployment and release evidence
+
+Read [DEPLOYMENT.md](docs/DEPLOYMENT.md) for the single deployment path and [RELEASE_READINESS.md](docs/RELEASE_READINESS.md) for verified gates and remaining blockers.

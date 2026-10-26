@@ -2,9 +2,10 @@
   "name": "hamnavaz",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "build": "npm --prefix frontend ci && npm --prefix frontend run build"
   },
   "dependencies": {
-    "next": "latest"
+    "@neon/config": "1.9.4",
+    "@neon/env": "1.6.5"
   }
 }

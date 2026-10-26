@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 from app.core.database_config import (
     DATABASE_URL,
@@ -22,12 +23,9 @@ if is_sqlite():
 
 
 if is_postgres():
-    engine_args.update(
-        {
-            "pool_size": 5,
-            "max_overflow": 10,
-        }
-    )
+    # Neon PgBouncer owns pooling. Do not multiply long-lived pools per Vercel instance.
+    engine_args["poolclass"] = NullPool
+    connect_args["connect_timeout"] = 10
 
 
 engine = create_engine(

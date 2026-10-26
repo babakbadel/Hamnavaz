@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -48,7 +49,7 @@ def create_rating(
 
 @router.get("/profile/{profile_id}", response_model=list[RatingResponse])
 def profile_ratings(
-    profile_id: str,
+    profile_id: UUID,
     db: Session = Depends(get_db),
 ):
     return (

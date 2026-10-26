@@ -8,6 +8,25 @@ API_URL="${HAMNAVAZ_API_URL:-${BASE_URL}/api}"
 BASE_URL="${BASE_URL%/}"
 API_URL="${API_URL%/}"
 
+# Reuse the caller's Vercel authentication for protected deployment URLs.
+# No bypass token is passed on the command line or stored by this script.
+if [[ "${HAMNAVAZ_USE_VERCEL_AUTH:-0}" == "1" ]]; then
+  command -v vercel >/dev/null || { echo "Authenticated smoke requires Vercel CLI"; exit 1; }
+fi
+
+http() {
+  local url="$1"
+  shift
+  if [[ "${HAMNAVAZ_USE_VERCEL_AUTH:-0}" == "1" ]]; then
+    local authority="${url#*://}"
+    local path="/${authority#*/}"
+    local origin="${url%%://*}://${authority%%/*}"
+    vercel curl "$path" --deployment "$origin" -- "$@"
+  else
+    curl -L "$url" "$@"
+  fi
+}
+
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
 
@@ -17,15 +36,33 @@ check() {
   local expected="${3:-200}"
   local code
 
-  code="$(curl -L -sS -o "$TMP" -w '%{http_code}' --max-time 20 "$url")"
+  code="$(http "$url" -sS -o "$TMP" -w '%{http_code}' --max-time 20)"
   echo "${label} -> ${code}"
 
   if [[ "$code" != "$expected" ]]; then
     echo "Unexpected HTTP status for ${label}. URL: ${url}"
-    echo "Response:"
-    head -c 2000 "$TMP" || true
+    echo "Response body omitted; inspect authenticated runtime logs."
     exit 1
   fi
+}
+
+assert_json() {
+  local kind="$1"
+  python3 - "$TMP" "$kind" "${HAMNAVAZ_EXPECTED_SHA:-}" <<'JSON_CHECK'
+import json, sys
+with open(sys.argv[1]) as response:
+    data = json.load(response)
+kind, expected_sha = sys.argv[2:]
+if kind == "health":
+    assert data.get("status") == "ok", "API health is not healthy JSON"
+elif kind == "openapi":
+    assert "/search/musicians" in data.get("paths", {}), "Wrong OpenAPI application"
+elif kind == "search":
+    assert {"total", "page", "limit", "pages", "results"}.issubset(data), "Wrong search envelope"
+    assert isinstance(data["results"], list), "Wrong search results"
+elif kind == "version":
+    assert expected_sha and data.get("commit_sha") == expected_sha, "Production backend is not the expected commit"
+JSON_CHECK
 }
 
 check_header() {
@@ -35,7 +72,7 @@ check_header() {
   local expected="$4"
   local value
 
-  value="$(curl -L -sSI --max-time 20 "$url" | awk -F': ' -v h="$header" 'tolower($1)==tolower(h){print $2}' | tr -d '\r' | tail -1)"
+  value="$(http "$url" -sSI --max-time 20 | awk -F': ' -v h="$header" 'tolower($1)==tolower(h){print $2}' | tr -d '\r' | tail -1)"
   echo "${label} ${header} -> ${value:-<missing>}"
 
   if [[ "$value" != "$expected" ]]; then
@@ -48,8 +85,8 @@ check_header() {
 # Frontend production surface
 # -----------------------------------------------------------------------------
 check "${BASE_URL}/" "/" 200
-check "${BASE_URL}/musicians" "/musicians" 200
-check "${BASE_URL}/activity" "/activity" 200
+check "${BASE_URL}/musicians/" "/musicians" 200
+check "${BASE_URL}/activity/" "/activity" 200
 
 check_header "${BASE_URL}/" "/" "x-content-type-options" "nosniff"
 check_header "${BASE_URL}/" "/" "x-frame-options" "DENY"
@@ -62,11 +99,18 @@ check_header "${BASE_URL}/" "/" "referrer-policy" "strict-origin-when-cross-orig
 # a frontend 404 page as an API response. If API and frontend share a domain,
 # API_URL defaults to https://<frontend>/api.
 check "${API_URL}/health" "API /health" 200
+assert_json health
+if [[ -n "${HAMNAVAZ_EXPECTED_SHA:-}" ]]; then
+  check "${API_URL}/system/version" "API /system/version" 200
+  assert_json version
+fi
 check "${API_URL}/docs" "API /docs" 200
 check "${API_URL}/openapi.json" "API /openapi.json" 200
+assert_json openapi
 
 # Verify a real public domain endpoint, not only framework documentation.
 check "${API_URL}/search/musicians" "API /search/musicians" 200
+assert_json search
 
 # Protected API boundaries must reject unauthenticated access.
 check "${API_URL}/match/me" "API /match/me" 401

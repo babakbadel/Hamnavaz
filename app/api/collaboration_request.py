@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -65,7 +67,7 @@ def inbox(db: Session = Depends(get_db), current_user: User = Depends(get_curren
     )
 
 
-def _set_status(request_id: str, status: str, db: Session, current_user: User):
+def _set_status(request_id: UUID, status: str, db: Session, current_user: User):
     profile = get_my_profile(db, current_user)
     request = (
         db.query(CollaborationRequest)
@@ -89,10 +91,10 @@ def _set_status(request_id: str, status: str, db: Session, current_user: User):
 
 
 @router.put("/{request_id}/accept")
-def accept_request(request_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def accept_request(request_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return _set_status(request_id, "accepted", db, current_user)
 
 
 @router.put("/{request_id}/reject")
-def reject_request(request_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def reject_request(request_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return _set_status(request_id, "rejected", db, current_user)

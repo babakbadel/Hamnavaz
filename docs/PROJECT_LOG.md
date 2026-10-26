@@ -1,4 +1,36 @@
+## 2026-10-26 — Deployment blocker follow-up
+
+- Authenticated probe of preview `dpl_FMpU3GKeE1rUkASkD6gghAy6gNKW` returned 500. Fresh backend logs confirmed `ValueError: Invalid database URL; configure DATABASE_URL in the environment` during import. No credential was decrypted or printed.
+- Latest prior CI `40249925151` passed backend/frontend but failed the mobile receiver-message assertion. Repeated baseline browser flows reproduced the same failure (1/10). The test now waits for the message POST and checks an article rather than any matching page text before navigating the receiver. After repair: 10/10 local desktop/mobile scenarios passed. Browser contexts now close on failure as well.
+- Added a disposable PostgreSQL 18 CI job: repeated upgrade, schema parity and existing real-user flow checks. This is separate from Neon and never uses deployment credentials. Its remote result must be recorded after push.
+- Added `scripts/database-preflight.py`: validates Psycopg 3, TLS and matching pooled/direct targets; `--connect` makes read-only SELECT 1 probes. It never migrates or prints credentials/driver exceptions. Three preflight regression tests pass; full local suite before the authenticated-transport regression: 41 passed.
+- Added a mock authenticated-transport regression validating the documented Vercel CLI path / --deployment / -- curl-options contract.
+- Smoke can use the authenticated Vercel CLI with `HAMNAVAZ_USE_VERCEL_AUTH=1`; it no longer dumps arbitrary response bodies. Authenticated CLI execution still requires the caller's Vercel login. Public curl smoke remains covered by local tests.
+- PostgreSQL CI run 40316205912 exposed a redundant `cities_slug_key` constraint after successful upgrades. Added forward-only-in-use revision `pg_city_slug_20261026`: it checks that the replacement unique index exists, then removes only the redundant PostgreSQL constraint; no rows are deleted. Follow-up CI 40316479654 passed PostgreSQL repeated upgrade, schema parity and all three real PostgreSQL flow scenarios.
+- Explicit CORS_ORIGINS configured in Vercel for Production and the candidate Preview branch; existing deployments are unchanged.
+- No remote database migration, production promotion or merge. Neon account access / valid private connection configuration remains required. The existing Neon project is recorded in NEON_SETUP.md; a suggestion to connect Neon is not proof of authentication.
+- Graph verification remains User → Profile → Discovery → Collaboration → Message → Notification. Live capacity/load behavior is not certified.
+
+## 2026-10-26 — Neon PostgreSQL preparation
+
+Owner confirmed project `wild-waterfall-21366850`, branch `production` (`br-blue-darkness-b49hz8o7`), Free/PostgreSQL 18, Ohio. CLI init linked offline; deploy is blocked on browser authentication. Code keeps FastAPI/SQLAlchemy with Psycopg 3, pooled app traffic and direct migrations. See `NEON_SETUP.md` for credential placement, tested scope and the existing migration's offline SQL limitation. No live schema/data changes or production promotion were performed.
+
 # Hamnavaz — Project Log
+
+## 2026-10-25 — Remote handoff
+
+PR #17 code commit `c40cdda` passed GitHub frontend/backend/E2E (run 40217187133). Project settings were corrected to repository-root Services with Node 22; published production was not promoted. Canonical preview now invokes Python but fails app import due to an invalid configured DATABASE_URL. No database credential was read, no new provider was provisioned, and no production data was migrated. Resume from this environment blocker; do not redo the completed code repair or treat READY as an API health result.
+
+## 2026-10-25 — Release gate repair
+
+Canonical deployment: root `vercel.json` → Next.js `frontend/` + FastAPI `app.main:app`. Earlier entries below are historical and do not override `docs/DEPLOYMENT.md`.
+
+Baseline reproduced: pytest 15 PASS / 2 FAIL; the online search failed on timezone-naive SQLite timestamps and the profile smoke expected the wrong response envelope. Migration history omitted messages; metadata creation in tests hid this gap. Production smoke run 40210653655 passed frontend pages and three headers, then failed `/api/health` with a Next.js HTML 404.
+
+Repairs: isolated migration-backed tests; messages/city-index migration; authenticated profile update; shared browser API client; profile UUID links; real search controls; typed UUID boundaries; production secret/CORS validation; lockfile and consolidated CI/E2E; JSON/SHA-aware after-deployment smoke. Graph: User → Profile → Discovery/Presence → Match → Collaboration → Message → Notification is the verification path. Capacity: bounded API query limits are retained; load and capacity benchmarking are not claimed by this patch.
+
+See `docs/RELEASE_READINESS.md` for final verification and remaining release blockers.
+
 
 ## 2026-08-21 — Continuation baseline
 

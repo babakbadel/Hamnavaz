@@ -1,11 +1,12 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import create_engine
 from sqlalchemy import pool
 
 from alembic import context
 
 from app.core.config import settings
+from app.core.database_config import migration_url
 from app.database.base import Base
 
 # IMPORTANT:
@@ -21,10 +22,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-config.set_main_option(
-    "sqlalchemy.url",
-    settings.DATABASE_URL,
-)
+# Keep URL objects out of ConfigParser: percent-encoded passwords must stay intact.
+url = migration_url(settings.DATABASE_URL, settings.DATABASE_URL_UNPOOLED)
 
 
 target_metadata = Base.metadata
@@ -34,10 +33,6 @@ def run_migrations_offline() -> None:
     """
     Run migrations in offline mode.
     """
-
-    url = config.get_main_option(
-        "sqlalchemy.url"
-    )
 
     context.configure(
         url=url,
@@ -57,13 +52,7 @@ def run_migrations_online() -> None:
     Run migrations against the live database.
     """
 
-    connectable = engine_from_config(
-        config.get_section(
-            config.config_ini_section,
-        ),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = create_engine(url, poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
 

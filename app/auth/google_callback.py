@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
+from app.core.config import settings
 from app.domains.users.model import User
 
 from app.auth.google_service import (
@@ -21,9 +22,7 @@ router = APIRouter(
 )
 
 
-GOOGLE_REDIRECT_URI = (
-    "http://localhost:8000/auth/google/callback"
-)
+GOOGLE_REDIRECT_URI = settings.GOOGLE_REDIRECT_URI
 
 
 @router.get("/callback")

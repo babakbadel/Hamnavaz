@@ -1,22 +1,36 @@
-name: Production Smoke On Push
+name: Production Smoke After Deployment
 
 on:
-  push:
-    branches: [main]
+  deployment_status:
   workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Full commit SHA expected on the production API
+        required: true
+        type: string
 
 permissions:
   contents: read
 
+concurrency:
+  group: production-smoke-after-deployment
+  cancel-in-progress: false
+
 jobs:
   smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production'))
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout deployed source
         uses: actions/checkout@v7
-      - name: Wait briefly for Vercel deployment propagation
-        run: sleep 30
-      - name: Run production smoke checks
+        with:
+          ref: ${{ github.event.deployment.sha || github.sha }}
+          persist-credentials: false
+      - name: Run production smoke for the expected commit
         env:
           HAMNAVAZ_BASE_URL: https://hamnavaz.vercel.app
+          HAMNAVAZ_EXPECTED_SHA: ${{ inputs.expected_sha || github.event.deployment.sha }}
         run: bash scripts/production-smoke.sh

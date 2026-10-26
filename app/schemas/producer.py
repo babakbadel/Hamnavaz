@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ProducerBase(BaseModel):
-{{FIELDS}}
+    pass  # Legacy scaffold; no fields have been defined.
 
 
 class ProducerCreate(ProducerBase):

@@ -65,3 +65,13 @@ export const getMessages = () => request<Message[]>("/messages/");
 export const getFavorites = () => request<unknown[]>("/favorites/");
 export const deleteFavorite = (profileId: string) => request(`/favorites/${encodeURIComponent(profileId)}`, { method: "DELETE" });
 export const getRatings = (profileId: string) => request<unknown[]>(`/ratings/profile/${encodeURIComponent(profileId)}`);
+
+export type ProfileInput = { display_name: string; city: string; bio: string };
+export type Instrument = { id: string; name: string; description?: string | null };
+export const getMyProfile = () => request<Musician>("/musician/me");
+export const getInstruments = () => request<Instrument[]>("/instrument/");
+export function createProfile(data: ProfileInput) {
+  const query = new URLSearchParams(data);
+  return request<Musician>(`/musician/profile?${query}`, { method: "POST" });
+}
+export const updateProfile = (data: ProfileInput) => request<Musician>("/musician/profile", { method: "PATCH", body: JSON.stringify(data) });

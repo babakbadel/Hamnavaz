@@ -55,3 +55,9 @@ def test_musician_search_supports_presence_filter():
     payload = response.json()
     assert {"total", "page", "limit", "pages", "results"}.issubset(payload)
     assert all("is_online" in item for item in payload["results"])
+
+
+def test_api_slash_redirect_keeps_public_mount_prefix():
+    response = client.get("/api/messages", follow_redirects=False)
+    assert response.status_code == 307
+    assert response.headers["location"].endswith("/api/messages/")

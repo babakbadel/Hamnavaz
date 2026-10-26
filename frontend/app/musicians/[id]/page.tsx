@@ -1,11 +1,24 @@
-import Link from "next/link";
-import { getMusician } from "../../../lib/api";
+"use client";
 
-export default async function MusicianProfile({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  let data: Awaited<ReturnType<typeof getMusician>> | null = null;
-  try { data = await getMusician(id); } catch {}
-  if (!data) return <main className="container page-shell"><nav className="profile-nav"><Link className="profile-brand" href="/"><span>♪</span> همنواز</Link><Link href="/musicians" className="back-link">← نوازنده‌ها</Link></nav><div className="profile-empty">پروفایل پیدا نشد.</div></main>;
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { ApiError, getMusician } from "../../../lib/api";
+
+export default function MusicianProfile() {
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<Awaited<ReturnType<typeof getMusician>> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true); setError(""); setData(null);
+    getMusician(id).then(value => { if (!cancelled) setData(value); })
+      .catch(error => { if (!cancelled) setError(error instanceof ApiError && error.status === 404 ? "پروفایل پیدا نشد." : "دریافت پروفایل ناموفق بود. دوباره تلاش کن."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [id]);
+  if (!data) return <main className="container page-shell"><nav className="profile-nav"><Link className="profile-brand" href="/"><span>♪</span> همنواز</Link><Link href="/musicians" className="back-link">← نوازنده‌ها</Link></nav><div className="profile-empty" role="status">{loading ? "در حال دریافت پروفایل..." : error}</div></main>;
   const p = data.profile;
   const presenceLabel = p.is_online ? "● آنلاین" : "● آفلاین";
   return <main className="container profile-page">
@@ -13,10 +26,10 @@ export default async function MusicianProfile({ params }: { params: Promise<{ id
     <section className="profile-hero-card">
       <div className="profile-avatar">{p.avatar_url ? <img src={p.avatar_url} alt={p.display_name || ""}/> : "♪"}<span className={p.is_online ? "profile-online online" : "profile-online offline"}>{presenceLabel}</span></div>
       <div className="profile-main-info"><p className="eyebrow">پروفایل نوازنده</p><h1>{p.display_name}</h1><p className="profile-location">📍 {p.city_name || p.city || "شهر ثبت نشده"}</p><div className="profile-tags"><span>عضو همنواز</span><span>پروفایل موسیقی</span>{p.is_verified && <span>✓ تأییدشده</span>}</div></div>
-      <div className="profile-actions"><Link className="primary-btn" href={`/collaboration/${id}`}>درخواست همکاری <span>←</span></Link><Link className="secondary-btn" href={`/messages?user=${id}`}>ارسال پیام</Link></div>
+      <div className="profile-actions"><Link className="primary-btn" href={`/collaboration/${p.id}`}>درخواست همکاری <span>←</span></Link><Link className="secondary-btn" href={`/messages?user=${p.id}`}>ارسال پیام</Link></div>
     </section>
     <section className="profile-content-grid"><article className="profile-panel profile-about"><div className="panel-kicker">01</div><h2>درباره من</h2><p>{p.bio || "این نوازنده هنوز توضیحی درباره خودش ثبت نکرده است."}</p></article><article className="profile-panel"><div className="panel-kicker">02</div><h2>ساز و مهارت</h2>{data.instruments.length ? <div className="profile-skills">{data.instruments.map((x, i) => <div className="profile-skill" key={String(x.id ?? i)}><span className="skill-icon">♫</span><div><strong>{String(x.instrument_id ?? "ساز")}</strong><small>{String(x.level ?? "فعال")}</small></div></div>)}</div> : <p className="muted">هنوز سازی ثبت نشده است.</p>}</article></section>
-    <section className="profile-next"><div><p className="eyebrow">قدم بعدی</p><h2>برای یک همکاری واقعی آماده‌ای؟</h2><p>یک پیام بفرست و گفت‌وگو را برای تمرین، هم‌نوازی یا اجرا شروع کن.</p></div><Link className="primary-btn" href={`/collaboration/${id}`}>شروع همکاری ←</Link></section>
+    <section className="profile-next"><div><p className="eyebrow">قدم بعدی</p><h2>برای یک همکاری واقعی آماده‌ای؟</h2><p>یک پیام بفرست و گفت‌وگو را برای تمرین، هم‌نوازی یا اجرا شروع کن.</p></div><Link className="primary-btn" href={`/collaboration/${p.id}`}>شروع همکاری ←</Link></section>
     <style>{`
       .profile-page{padding-bottom:80px}.profile-nav{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}.profile-brand{font-family:Estedad,Vazirmatn,sans-serif;font-size:20px;font-weight:900}.profile-brand span{color:#d9b45b;margin-left:7px}.back-link{color:#9ba6b8;font-size:13px;font-weight:700}.back-link:hover{color:#d9b45b}
       .profile-hero-card,.profile-panel,.profile-next{position:relative;overflow:hidden}.profile-hero-card{margin-top:34px;padding:34px;display:grid;grid-template-columns:auto 1fr auto;gap:26px;align-items:center;border:1px solid rgba(255,255,255,.075);border-radius:28px;background:radial-gradient(circle at 75% 20%,rgba(37,55,82,.4),transparent 42%),linear-gradient(145deg,#0d1726,#09111d);box-shadow:0 28px 90px rgba(0,0,0,.28)}
