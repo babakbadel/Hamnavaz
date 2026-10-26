@@ -76,3 +76,13 @@ The follow-up commit records remote evidence only; the green CI above belongs to
 ## Neon setup continuation — 2026-10-26
 
 The owner has now confirmed the Neon database exists. See `NEON_SETUP.md` for the prepared Psycopg 3 wiring, 38 passing local tests, successful root build, and remaining credential/migration/live-flow verification. The older “confirm whether a database exists” dependency is resolved; secure connection configuration is still pending.
+
+## Deployment gate continuation — 2026-10-26
+
+The baseline production smoke failure is a Next.js HTML 404 for `/api/health` (run 40232472395). A fresh authenticated probe of preview dpl_FMpU3GKeE1rUkASkD6gghAy6gNKW returned 500, and fresh runtime logs confirmed invalid DATABASE_URL during import. Credential content was not retrieved.
+
+Code follow-up 851bac8 reproduced the intermittent mobile message assertion locally (1/10 baseline scenarios), waited for successful POST and scoped assertions to message cards, then passed 10/10 repeated local desktop/mobile flows. Local Chromium 143 was supplied externally; standard CI browser results are tracked independently.
+
+The new disposable PostgreSQL 18 CI job exposed redundant cities_slug_key after an otherwise successful migration. Follow-up 8d74b01 adds revision pg_city_slug_20261026, retaining the unique slug index and all rows. In run 40316479654, PostgreSQL upgrade twice, Alembic schema parity and three existing real-user flow scenarios passed. Backend and frontend jobs also passed; record the final E2E result from that run or the subsequent exact candidate run before release.
+
+Added a secret-safe database preflight and Vercel-authenticated smoke transport with a regression test for CLI argument forwarding. CORS_ORIGINS was configured for future Production deployments and the candidate Preview branch. No live DB migration, production deployment/promotion, or merge was performed. Neon authentication and securely configured pooled/direct URLs remain the live blocker; successful disposable PostgreSQL CI does not certify Neon integration.

@@ -10,11 +10,22 @@ API_URL="${API_URL%/}"
 
 # Reuse the caller's Vercel authentication for protected deployment URLs.
 # No bypass token is passed on the command line or stored by this script.
-HTTP=(curl -L)
 if [[ "${HAMNAVAZ_USE_VERCEL_AUTH:-0}" == "1" ]]; then
   command -v vercel >/dev/null || { echo "Authenticated smoke requires Vercel CLI"; exit 1; }
-  HTTP=(vercel curl)
 fi
+
+http() {
+  local url="$1"
+  shift
+  if [[ "${HAMNAVAZ_USE_VERCEL_AUTH:-0}" == "1" ]]; then
+    local authority="${url#*://}"
+    local path="/${authority#*/}"
+    local origin="${url%%://*}://${authority%%/*}"
+    vercel curl "$path" --deployment "$origin" -- "$@"
+  else
+    curl -L "$url" "$@"
+  fi
+}
 
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
@@ -25,7 +36,7 @@ check() {
   local expected="${3:-200}"
   local code
 
-  code="$("${HTTP[@]}" "$url" -sS -o "$TMP" -w '%{http_code}' --max-time 20)"
+  code="$(http "$url" -sS -o "$TMP" -w '%{http_code}' --max-time 20)"
   echo "${label} -> ${code}"
 
   if [[ "$code" != "$expected" ]]; then
@@ -61,7 +72,7 @@ check_header() {
   local expected="$4"
   local value
 
-  value="$("${HTTP[@]}" "$url" -sSI --max-time 20 | awk -F': ' -v h="$header" 'tolower($1)==tolower(h){print $2}' | tr -d '\r' | tail -1)"
+  value="$(http "$url" -sSI --max-time 20 | awk -F': ' -v h="$header" 'tolower($1)==tolower(h){print $2}' | tr -d '\r' | tail -1)"
   echo "${label} ${header} -> ${value:-<missing>}"
 
   if [[ "$value" != "$expected" ]]; then

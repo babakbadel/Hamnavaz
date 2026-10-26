@@ -5,7 +5,7 @@ import subprocess
 from threading import Thread
 
 
-def run_smoke(health_body):
+def run_smoke(health_body, extra_env=None):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass
@@ -33,6 +33,7 @@ def run_smoke(health_body):
     try:
         origin = f"http://127.0.0.1:{server.server_port}"
         environment = {**os.environ, "HAMNAVAZ_BASE_URL": origin, "HAMNAVAZ_API_URL": f"{origin}/api", "HAMNAVAZ_EXPECTED_SHA": "test-sha"}
+        environment.update(extra_env or {})
         return subprocess.run(["bash", str(Path(__file__).resolve().parents[1] / "scripts/production-smoke.sh")], env=environment, capture_output=True, text=True)
     finally:
         server.shutdown()
@@ -47,4 +48,22 @@ def test_smoke_rejects_html_200_masquerading_as_api():
 
 def test_smoke_checks_json_contract_and_expected_commit():
     result = run_smoke(b'{"status":"ok"}')
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_authenticated_smoke_uses_vercel_deployment_and_curl_separator(tmp_path):
+    cli = tmp_path / "vercel"
+    cli.write_text('''#!/usr/bin/env bash
+set -euo pipefail
+[[ "$1" == curl ]]
+path="$2"
+[[ "$3" == --deployment ]]
+origin="$4"
+[[ "$5" == -- ]]
+shift 5
+exec curl "${origin}${path}" "$@"
+''')
+    cli.chmod(0o700)
+    result = run_smoke(b'{"status":"ok"}', {
+        "HAMNAVAZ_USE_VERCEL_AUTH": "1", "PATH": f"{tmp_path}:{os.environ['PATH']}"})
     assert result.returncode == 0, result.stdout + result.stderr
