@@ -5,6 +5,8 @@
 - Added a disposable PostgreSQL 18 CI job: repeated upgrade, schema parity and existing real-user flow checks. This is separate from Neon and never uses deployment credentials. Its remote result must be recorded after push.
 - Added `scripts/database-preflight.py`: validates Psycopg 3, TLS and matching pooled/direct targets; `--connect` makes read-only SELECT 1 probes. It never migrates or prints credentials/driver exceptions. Three preflight regression tests pass; full local suite: 41 passed.
 - Smoke can use the authenticated Vercel CLI with `HAMNAVAZ_USE_VERCEL_AUTH=1`; it no longer dumps arbitrary response bodies. Authenticated CLI execution still requires the caller's Vercel login. Public curl smoke remains covered by local tests.
+- PostgreSQL CI run 40316205912 exposed a redundant `cities_slug_key` constraint after successful upgrades. Added forward-only-in-use revision `pg_city_slug_20261026`: it checks that the replacement unique index exists, then removes only the redundant PostgreSQL constraint; no rows are deleted. Follow-up CI must pass.
+- Explicit CORS_ORIGINS configured in Vercel for Production and the candidate Preview branch; existing deployments are unchanged.
 - No remote database migration, production promotion or merge. Neon account access / valid private connection configuration remains required. The existing Neon project is recorded in NEON_SETUP.md; a suggestion to connect Neon is not proof of authentication.
 - Graph verification remains User → Profile → Discovery → Collaboration → Message → Notification. Live capacity/load behavior is not certified.
 
